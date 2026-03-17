@@ -1,0 +1,296 @@
+<!-- register.html -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация — Habit tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #fff5f5 0%, #fff0f7 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #4a4a4a;
+        }
+
+        .container {
+            max-width: 400px;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        /* Простая менюшка */
+        .simple-menu {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            font-size: 1rem;
+        }
+
+        .simple-menu a {
+            text-decoration: none;
+            color: #b88c8c;
+            transition: color 0.3s;
+        }
+
+        .simple-menu a:hover {
+            color: #ff6b9d;
+        }
+
+        /* Карточка регистрации */
+        .register-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 40px;
+            padding: 2.5rem 2rem;
+            box-shadow: 0 20px 40px rgba(255, 150, 150, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        /* Приветственный эмодзи */
+        .hero-emoji {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            animation: wave 2s infinite;
+        }
+
+        @keyframes wave {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(10deg); }
+            75% { transform: rotate(-5deg); }
+        }
+
+        /* Заголовок */
+        h2 {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #ff8a8a, #ff6b9d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Подзаголовок */
+        .subtitle {
+            color: #a67c7c;
+            margin-bottom: 2rem;
+            font-size: 1rem;
+        }
+
+        /* Форма */
+        .form-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #b85c5c;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid rgba(255, 200, 200, 0.5);
+            border-radius: 30px;
+            font-size: 1rem;
+            background: rgba(255, 255, 255, 0.9);
+            transition: all 0.3s;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #ff9a9e;
+            box-shadow: 0 0 0 3px rgba(255, 154, 158, 0.2);
+        }
+
+        /* Кнопка регистрации */
+        .btn-register {
+            width: 100%;
+            background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+            color: white;
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: 600;
+            padding: 1rem;
+            border-radius: 50px;
+            margin: 1rem 0;
+            box-shadow: 0 10px 20px rgba(255, 150, 150, 0.3);
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(255, 150, 150, 0.4);
+        }
+
+        /* Ссылка на вход */
+        .login-link {
+            margin-top: 1.5rem;
+            color: #b88c8c;
+            font-size: 0.95rem;
+        }
+
+        .login-link a {
+            color: #ff6b9d;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* Мотивационная фраза */
+        .motivation {
+            margin: 2rem 0 0;
+            color: #d6a5a5;
+            font-style: italic;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .motivation span {
+            font-size: 1.2rem;
+        }
+
+        /* Сообщения об ошибках */
+        .errorlist {
+            list-style: none;
+            color: #ff6b6b;
+            font-size: 0.9rem;
+            margin-top: 0.3rem;
+        }
+
+        /* Маленькие эмодзи внизу */
+        .footer-emojis {
+            margin-top: 2rem;
+            font-size: 1.2rem;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Простая менюшка -->
+        <div class="simple-menu">
+            <a href="">Главная</a>
+            <a href="#">О нас</a>
+            <a href="#">Помощь</a>
+        </div>
+
+        <!-- Карточка регистрации -->
+        <div class="register-card">
+            <!-- Приветственный эмодзи -->
+            <div class="hero-emoji">
+                🌱
+            </div>
+
+            <!-- Заголовок -->
+            <h2>Создать аккаунт</h2>
+            <div class="subtitle">
+                Начни свой путь к новым привычкам
+            </div>
+
+            <!-- Форма регистрации -->
+            <form method="post">
+                {% csrf_token %}
+
+                <!-- Поле: Имя пользователя -->
+                <div class="form-group">
+                    <label>Логин</label>
+                    <input type="text" name="username" placeholder="Придумай имя" required>
+                    {% if login_error %}
+                        <ul class="errorlist">
+                                <li>{{login_error}}</li>
+                        </ul>
+                    {% endif %}
+                </div>
+
+                 <div class="form-group">
+                    <label>Номер телефона </label>
+                    <input type="tel"
+                           name="phone_number"
+                           placeholder="+7 (999) 123-45-67"
+                           value="{{ form.phone_number.value|default:'' }}"
+                           class="phone-input" required>
+                    {% if form.phone_number.errors %}
+                        <ul class="errorlist">
+                            {% for error in form.phone_number.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+
+                </div>
+
+
+                <!-- Поле: Пароль -->
+                <div class="form-group">
+                    <label>Пароль</label>
+                    <input type="password" name="password1" placeholder="••••••••" required>
+                    {% if form.password1.errors %}
+                        <ul class="errorlist">
+                            {% for error in form.password1.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+
+                <!-- Поле: Подтверждение пароля -->
+                <div class="form-group">
+                    <label>Повтори пароль</label>
+                    <input type="password" name="password2" placeholder="••••••••" required>
+                    {% if form.password2.errors %}
+                        <ul class="errorlist">
+                            {% for error in form.password2.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+
+                <!-- Кнопка -->
+                <button type="submit" class="btn-register">
+                    ✨ Начать
+                </button>
+            </form>
+
+            <!-- Ссылка на вход -->
+            <div class="login-link">
+                Уже есть аккаунт? <a href="">Войти</a>
+            </div>
+
+            <!-- Мотивационная фраза -->
+            <div class="motivation">
+                <span>💫</span> Твой первый шаг к новым привычкам
+                <span>💫</span>
+            </div>
+        </div>
+
+        <!-- Эмодзи в подвале -->
+        <div class="footer-emojis">
+            🌸  🌿  🌼
+        </div>
+    </div>
+</body>
+</html>

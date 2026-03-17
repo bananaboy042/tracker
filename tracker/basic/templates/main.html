@@ -1,0 +1,204 @@
+<!-- landing.html -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Habit tracker — твои привычки с заботой</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #fff5f5 0%, #fff0f7 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #4a4a4a;
+        }
+
+        .container {
+            max-width: 600px;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        /* Приветственный эмодзи */
+        .hero-emoji {
+            font-size: 5rem;
+            margin-bottom: 1rem;
+            animation: wave 2s infinite;
+        }
+
+        @keyframes wave {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(10deg); }
+            75% { transform: rotate(-5deg); }
+        }
+
+        /* Заголовок */
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #ff8a8a, #ff6b9d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Подзаголовок */
+        .subtitle {
+            font-size: 1.2rem;
+            color: #a67c7c;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        /* Фразы-мотивашки */
+        .quotes {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(5px);
+            border-radius: 30px;
+            padding: 2rem;
+            margin: 2rem 0;
+            box-shadow: 0 10px 30px rgba(255, 150, 150, 0.2);
+        }
+
+        .quote {
+            font-size: 1.1rem;
+            color: #b85c5c;
+            margin: 1rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+
+        .quote span {
+            font-size: 1.5rem;
+        }
+
+        /* Кнопка */
+        .btn-start {
+            display: inline-block;
+            background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+            color: white;
+            text-decoration: none;
+            font-size: 1.5rem;
+            font-weight: 600;
+            padding: 1.2rem 3rem;
+            border-radius: 50px;
+            margin: 2rem 0;
+            box-shadow: 0 10px 20px rgba(255, 150, 150, 0.3);
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-start:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(255, 150, 150, 0.4);
+        }
+
+        /* Маленькие эмодзи внизу */
+        .footer-emojis {
+            margin-top: 3rem;
+            font-size: 1.5rem;
+            opacity: 0.7;
+        }
+
+        /* Менюшка (простенькая) */
+        .simple-menu {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            font-size: 1rem;
+        }
+
+        .simple-menu a {
+            text-decoration: none;
+            color: #b88c8c;
+            transition: color 0.3s;
+        }
+
+        .simple-menu a:hover {
+            color: #ff6b9d;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .btn-start {
+                font-size: 1.2rem;
+                padding: 1rem 2rem;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Простая менюшка -->
+        <div class="simple-menu">
+            <a href="#">Главная</a>
+            <a href="#">О нас</a>
+            <a href="#">Помощь</a>
+        </div>
+
+        <!-- Приветственный эмодзи -->
+        <div class="hero-emoji">
+            🌸
+        </div>
+
+        <!-- Заголовок -->
+        <h1>Твои привычки<br>с заботой о тебе</h1>
+
+        <!-- Подзаголовок -->
+        <div class="subtitle">
+            Маленькие шаги каждый день —<br>
+            большие изменения в жизни
+        </div>
+
+        <!-- Мотивационные фразы (карусель из трёх) -->
+        <div class="quotes">
+            <div class="quote">
+                <span>☀️</span> Один день — одна привычка
+            </div>
+            <div class="quote">
+                <span>⭐</span> Ты лучше, чем был вчера
+            </div>
+            <div class="quote">
+                <span>🌸</span> Всё получится, я рядом
+            </div>
+        </div>
+
+        <!-- Кнопка "Начать" (ведёт на регистрацию) -->
+        <a href="{% url 'register' %}" class="btn-start">
+            ✨ Начать
+        </a>
+
+        <!-- Маленький текст под кнопкой -->
+        <div style="color: #d6b5b5; font-size: 0.9rem;">
+            Это бесплатно и навсегда
+        </div>
+
+        <!-- Эмодзи в подвале -->
+        <div class="footer-emojis">
+            💫 🕊️ 🌱
+        </div>
+    </div>
+</body>
+</html>
