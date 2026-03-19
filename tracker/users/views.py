@@ -16,5 +16,7 @@ def register(request):
         # Иван сделай пожалуйста проверку паролей
         password1 = request.POST.get('password1')
         password2 = request.POST.get('password2')
+        if password1 != password2:
+            return render(request, "register.html", context={'password_error': 'Пароли не совпадают'})
         print(login,number,password1,password2)
         return render(request, "register.html")

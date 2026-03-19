@@ -245,24 +245,16 @@
                 <div class="form-group">
                     <label>Пароль</label>
                     <input type="password" name="password1" placeholder="••••••••" required>
-                    {% if form.password1.errors %}
-                        <ul class="errorlist">
-                            {% for error in form.password1.errors %}
-                                <li>{{ error }}</li>
-                            {% endfor %}
-                        </ul>
-                    {% endif %}
+
                 </div>
 
                 <!-- Поле: Подтверждение пароля -->
                 <div class="form-group">
                     <label>Повтори пароль</label>
                     <input type="password" name="password2" placeholder="••••••••" required>
-                    {% if form.password2.errors %}
+                    {% if password_error %}
                         <ul class="errorlist">
-                            {% for error in form.password2.errors %}
-                                <li>{{ error }}</li>
-                            {% endfor %}
+                                <li>{{ password_error }}</li>
                         </ul>
                     {% endif %}
                 </div>
