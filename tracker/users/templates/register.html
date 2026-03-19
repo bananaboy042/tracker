@@ -232,11 +232,9 @@
                            placeholder="+7 (999) 123-45-67"
                            value="{{ form.phone_number.value|default:'' }}"
                            class="phone-input" required>
-                    {% if form.phone_number.errors %}
+                    {% if phone_error %}
                         <ul class="errorlist">
-                            {% for error in form.phone_number.errors %}
-                                <li>{{ error }}</li>
-                            {% endfor %}
+                            <li>{{ phone_error }}</li>
                         </ul>
                     {% endif %}
 
