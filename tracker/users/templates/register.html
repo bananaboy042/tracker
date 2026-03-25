@@ -217,7 +217,7 @@
                 <!-- Поле: Имя пользователя -->
                 <div class="form-group">
                     <label>Логин</label>
-                    <input type="text" name="username" placeholder="Придумай имя" required>
+                    <input type="text" name="username" placeholder="Придумай имя" value="{{login}}" required>
                     {% if login_error %}
                         <ul class="errorlist">
                                 <li>{{login_error}}</li>
@@ -230,7 +230,7 @@
                     <input type="tel"
                            name="phone_number"
                            placeholder="+7 (999) 123-45-67"
-                           value="{{ form.phone_number.value|default:'' }}"
+                           value="{{number}}"
                            class="phone-input" required>
                     {% if phone_error %}
                         <ul class="errorlist">
