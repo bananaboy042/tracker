@@ -8,3 +8,4 @@ pycache/
 .installed.cfg
 *.egg
 .idea/
+tracker/db.sqlite3
