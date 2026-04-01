@@ -223,6 +223,11 @@
                                 <li>{{login_error}}</li>
                         </ul>
                     {% endif %}
+                    {% if duplicate_error %}
+                        <ul class="errorlist">
+                                <li>{{duplicate_error}}</li>
+                        </ul>
+                    {% endif %}
                 </div>
 
                  <div class="form-group">

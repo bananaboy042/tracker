@@ -1,4 +1,6 @@
 from django.shortcuts import render
+
+from .models import User
 from .utils import has_russian_letters, validate_and_format_phone
 
 
@@ -25,7 +27,14 @@ def register(request):
             error = True
             context['password_error'] = 'Пароли не совпадают'
 
-        print(login, number, password1, password2)
+        db_login = User.objects.filter(username=login)
+        db_number = User.objects.filter(phone=number)
+        if db_login or db_number:
+            error = True
+            context['duplicate_error'] = 'Такой логин или номер телефона уже существует'
+
+
+
         if error:
             context['login'] = login
             context['number'] = user_number
