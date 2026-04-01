@@ -1,7 +1,7 @@
 from django.shortcuts import render
 
 from .models import User
-from .utils import has_russian_letters, validate_and_format_phone
+from .utils import has_russian_letters, validate_and_format_phone, generation_code
 
 
 def register(request):
@@ -33,11 +33,25 @@ def register(request):
             error = True
             context['duplicate_error'] = 'Такой логин или номер телефона уже существует'
 
-
-
         if error:
             context['login'] = login
             context['number'] = user_number
             return render(request, 'register.html', context)
+
+        verification_code = generation_code()
+        print(verification_code)
+
+        """
+        тут мы должны сохранить пользователя 
+        login number verification_code password
+        """
+
+        """
+        Отправить пользователю смс с verification_code
+        """
+
+        """
+        render на шаблон в котором пользователь будет вводить код из смс
+        """
 
         return render(request, "register.html")

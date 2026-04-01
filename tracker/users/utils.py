@@ -1,4 +1,6 @@
+import random
 import re
+import string
 
 
 def has_russian_letters(text):
@@ -57,3 +59,7 @@ def validate_and_format_phone(phone):
         return formatted
     else:
         return False
+
+
+def generation_code():
+    return ''.join(random.choice(string.digits) for _ in range(6))
