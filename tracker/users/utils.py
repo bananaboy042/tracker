@@ -61,5 +61,5 @@ def validate_and_format_phone(phone):
         return False
 
 
-def generation_code():
+def generation_code() -> str:
     return ''.join(random.choice(string.digits) for _ in range(6))
