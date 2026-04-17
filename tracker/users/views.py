@@ -1,7 +1,8 @@
 from django.shortcuts import render
+from django.utils import timezone
 
 from .models import User
-from .utils import has_russian_letters, validate_and_format_phone, generation_code
+from .utils import has_russian_letters, validate_and_format_phone, generation_code, send_message_by_phone_number
 
 
 def register(request):
@@ -39,19 +40,24 @@ def register(request):
             return render(request, 'register.html', context)
 
         verification_code = generation_code()
-        print(verification_code)
+        user = User.objects.create_user(username=login, phone=number,
+                                        verification_code=verification_code, code_sent_at=timezone.now())
+
+        send_message_by_phone_number(user)
+
 
         """
-        тут мы должны сохранить пользователя 
-        login number verification_code password
-        """
-
-        """
-        Отправить пользователю смс с verification_code
-        """
-
-        """
-        render на шаблон в котором пользователь будет вводить код из смс
+        редирект на строницу  в котором пользователь будет вводить код из смс, в котором будет кнопка отправить код повторно
+        ВАЖНО! В УРЛЕ ПЕРЕДАТЬ ID пользователя
+        return redirect(f'/verify-code/{user.id}/')
+        
+        мы 
+        
+        Если пользователь нажал отправить код повторно
+        1) Мыц должны сгенерировать новый код
+        2) Обновить запись о коде в БД
+        3) отправить ему новую СМС
+        
         """
 
         return render(request, "register.html")

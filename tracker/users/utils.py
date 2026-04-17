@@ -63,3 +63,12 @@ def validate_and_format_phone(phone):
 
 def generation_code() -> str:
     return ''.join(random.choice(string.digits) for _ in range(6))
+
+
+def send_message_by_phone_number(user):
+    msg_text = f"""Сообщение отправлено на номер: {user.phone}.
+    Текст сообщения:
+    "Уважаемый, {user.username}. Ваш код подтверждения для сервиса Трекера привычек: {user.verification_code}, 
+    если вы нигде не регистрировались, то просто проигнорируйте это сообщение"
+    """
+    print(msg_text)
