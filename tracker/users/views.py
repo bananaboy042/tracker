@@ -1,4 +1,6 @@
-from django.shortcuts import render
+
+
+from django.shortcuts import render, redirect, HttpResponse
 from django.utils import timezone
 
 from .models import User
@@ -46,6 +48,7 @@ def register(request):
         send_message_by_phone_number(user)
 
 
+
         """
         редирект на строницу  в котором пользователь будет вводить код из смс, в котором будет кнопка отправить код повторно
         ВАЖНО! В УРЛЕ ПЕРЕДАТЬ ID пользователя
@@ -60,4 +63,8 @@ def register(request):
         
         """
 
-        return render(request, "register.html")
+        return redirect('verifycode', user_id=user.id)
+
+def verify_code(request, user_id):
+    print(user_id)
+    return HttpResponse("<h1>Код</h1>")
