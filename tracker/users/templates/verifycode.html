@@ -244,13 +244,11 @@
                            maxlength="6"
                            autocomplete="off"
                            required>
-                    {% if form.code.errors %}
                         <ul class="errorlist">
-                            {% for error in form.code.errors %}
-                                <li>{{ error }}</li>
-                            {% endfor %}
+                            {% if verify_error %}
+                                <li>{{ verify_error }}</li>
+                            {% endif %}
                         </ul>
-                    {% endif %}
                 </div>
 
                 <button type="submit" class="btn-verify">
