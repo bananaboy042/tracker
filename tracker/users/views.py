@@ -77,3 +77,4 @@ def verify_code(request, user_id):
         #     тут должна быть авторизация
             return redirect('main')
         return render(request, "verifycode.html")
+
