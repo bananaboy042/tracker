@@ -66,5 +66,14 @@ def register(request):
         return redirect('verifycode', user_id=user.id)
 
 def verify_code(request, user_id):
-    print(user_id)
-    return HttpResponse("<h1>Код</h1>")
+    if request.method == "GET":
+        return render(request, "verifycode.html")
+    elif request.method == "POST":
+        verifycode = request.POST.get("code")
+        user = User.objects.get(id=user_id)
+        print(type(verifycode), type(user.verification_code))
+        print(verifycode, user.verification_code)
+        if verifycode == user.verification_code:
+        #     тут должна быть авторизация
+            return redirect('main')
+        return render(request, "verifycode.html")
