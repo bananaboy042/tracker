@@ -1,5 +1,5 @@
 
-
+from django.contrib.auth import login, logout
 from django.shortcuts import render, redirect, HttpResponse
 from django.utils import timezone
 
@@ -73,9 +73,20 @@ def verify_code(request, user_id):
     elif request.method == "POST":
         verifycode = request.POST.get("code")
         if verifycode == user.verification_code:
+            login(request, user)
+
         #     тут должна быть авторизация
-            return redirect('main')
+            return redirect('tracker')
         else:
             context["verify_error"] = 'Неверный код. Введите правильно, либо отправьте смс заново'
             return render(request, "verifycode.html", context)
+
+def tracker(request):
+    return render(request, 'tracker.html')
+
+
+
+def logout_user(request):
+    logout(request)
+    return redirect('main')
 
