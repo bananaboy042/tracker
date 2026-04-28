@@ -90,3 +90,6 @@ def logout_user(request):
     logout(request)
     return redirect('main')
 
+def newcode(request, user_id):
+    return render(request, 'verifycode.html')
+

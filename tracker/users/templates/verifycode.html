@@ -299,7 +299,7 @@
         resendBtn.addEventListener('click', function(e) {
             if (resendBtn.disabled) return;
 
-            fetch('', {
+            fetch('{% url 'newverifycode' user_id %}', {
                 method: 'POST',
                 headers: {
                     'X-CSRFToken': '{{ csrf_token }}',
