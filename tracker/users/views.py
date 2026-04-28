@@ -1,5 +1,6 @@
 
 from django.contrib.auth import login, logout
+from django.http.response import JsonResponse
 from django.shortcuts import render, redirect, HttpResponse
 from django.utils import timezone
 
@@ -67,7 +68,7 @@ def register(request):
 
 def verify_code(request, user_id):
     user = User.objects.get(id=user_id)
-    context = {'phone_number': user.phone}
+    context = {'phone_number': user.phone, 'user_id': user.id}
     if request.method == "GET":
         return render(request, "verifycode.html", context)
     elif request.method == "POST":
@@ -91,5 +92,10 @@ def logout_user(request):
     return redirect('main')
 
 def newcode(request, user_id):
-    return render(request, 'verifycode.html')
+    verification_code = generation_code()
+    user = User.objects.get(id=user_id)
+    user.verification_code = verification_code
+    user.save()
+    send_message_by_phone_number(user)
+    return JsonResponse({'success': True})
 
