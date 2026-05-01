@@ -99,3 +99,8 @@ def newcode(request, user_id):
     send_message_by_phone_number(user)
     return JsonResponse({'success': True})
 
+
+def login_user(request):
+    return render(request, 'loginuser.html')
+
+
