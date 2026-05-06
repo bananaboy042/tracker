@@ -272,11 +272,9 @@
                            name="password"
                            placeholder="••••••••"
                            required>
-                    {% if form.password.errors %}
+                    {% if password_error %}
                         <ul class="errorlist">
-                            {% for error in form.password.errors %}
-                                <li>{{ error }}</li>
-                            {% endfor %}
+                                <li>{{ password_error }}</li>
                         </ul>
                     {% endif %}
                 </div>

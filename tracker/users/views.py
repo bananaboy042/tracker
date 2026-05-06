@@ -1,5 +1,5 @@
 
-from django.contrib.auth import login, logout
+from django.contrib.auth import login, logout, authenticate
 from django.http.response import JsonResponse
 from django.shortcuts import render, redirect, HttpResponse
 from django.utils import timezone
@@ -111,6 +111,20 @@ def login_user(request):
         if has_russian_letters(login):
             error = True
             context['login_error'] = 'Логин не должен содержать русских букв'
+        else:
+            user = authenticate(request, username=login, password=password)
+
+            if user is not None:
+                login(request, user)
+                return redirect('tracker')
+            else:
+                if User.objects.filter(username=login).exists():
+                    error = True
+                    context['password_error'] = 'Неверный пароль'
+                else:
+                    error = True
+                    context['login_error'] = 'Такого пользователя не существует'
+
         if error:
             context['login'] = login
 
