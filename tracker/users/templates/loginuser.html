@@ -254,14 +254,13 @@
                     <input type="text"
                            name="username"
                            placeholder="Твоё имя"
-                           value="{{ form.username.value|default:'' }}"
+                           value="{{ login }}"
                            autofocus
                            required>
-                    {% if form.username.errors %}
+                    {% if login_error %}
                         <ul class="errorlist">
-                            {% for error in form.username.errors %}
-                                <li>{{ error }}</li>
-                            {% endfor %}
+
+                                <li>{{ login_error }}</li>
                         </ul>
                     {% endif %}
                 </div>

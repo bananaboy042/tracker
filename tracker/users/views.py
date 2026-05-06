@@ -101,6 +101,19 @@ def newcode(request, user_id):
 
 
 def login_user(request):
-    return render(request, 'loginuser.html')
+    if request.method == "GET":
+        return render(request, 'loginuser.html')
+    elif request.method == "POST":
+        login = request.POST.get('username')
+        password = request.POST.get('password')
+        error = False
+        context = {}
+        if has_russian_letters(login):
+            error = True
+            context['login_error'] = 'Логин не должен содержать русских букв'
+        if error:
+            context['login'] = login
+
+        return render(request, 'loginuser.html', context=context)
 
 
