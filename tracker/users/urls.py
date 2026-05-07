@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import register, verify_code, tracker, logout_user, newcode, login_user
+from .views import register, verify_code, tracker, logout_user, newcode, login_user, res_password
 
 urlpatterns = [
     path('register/', register, name="register"),
@@ -8,7 +8,8 @@ urlpatterns = [
     path('tracker/', tracker, name="tracker"),
     path('logout', logout_user, name="logout"),
     path('newverifycode/<int:user_id>/', newcode, name='newverifycode'),
-    path('loginuser/', login_user, name='loginuser')
+    path('loginuser/', login_user, name='loginuser'),
+    path('resetpassword/', res_password, name='res_password')
 
 
 

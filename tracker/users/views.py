@@ -131,3 +131,29 @@ def login_user(request):
         return render(request, 'loginuser.html', context=context)
 
 
+def res_password(request):
+    if request.method == 'GET':
+        return render(request, 'reset_pass.html')
+    elif request.method == 'POST':
+        user_login = request.POST.get('username')
+        print(user_login)
+        if User.objects.filter(username=login).exists():
+            verification_code = generation_code()
+            user = User.objects.get(username=login)
+            user.verification_code = verification_code
+            user.save()
+            send_message_by_phone_number(user)
+            return JsonResponse({
+                'success': True,
+                'phone_masked': user.phone})
+        else:
+            return JsonResponse({
+                'success': False,
+                'error': 'Такого пользователя не существует'
+            }, status=400)
+
+
+
+
+
+
