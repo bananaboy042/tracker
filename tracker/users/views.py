@@ -1,3 +1,4 @@
+import json
 
 from django.contrib.auth import login, logout, authenticate
 from django.http.response import JsonResponse
@@ -43,7 +44,7 @@ def register(request):
             return render(request, 'register.html', context)
 
         verification_code = generation_code()
-        user = User.objects.create_user(username=login, phone=number,
+        user = User.objects.create_user(username=login, phone=number, password=password1,
                                         verification_code=verification_code, code_sent_at=timezone.now())
 
         send_message_by_phone_number(user)
@@ -104,16 +105,15 @@ def login_user(request):
     if request.method == "GET":
         return render(request, 'loginuser.html')
     elif request.method == "POST":
-        login = request.POST.get('username')
+        login_user = request.POST.get('username')
         password = request.POST.get('password')
         error = False
         context = {}
-        if has_russian_letters(login):
+        if has_russian_letters(login_user):
             error = True
             context['login_error'] = 'Логин не должен содержать русских букв'
         else:
-            user = authenticate(request, username=login, password=password)
-
+            user = authenticate(request, username=login_user, password=password)
             if user is not None:
                 login(request, user)
                 return redirect('tracker')
@@ -135,11 +135,12 @@ def res_password(request):
     if request.method == 'GET':
         return render(request, 'reset_pass.html')
     elif request.method == 'POST':
-        user_login = request.POST.get('username')
-        print(user_login)
-        if User.objects.filter(username=login).exists():
+        data = json.loads(request.body)
+        user_login = data.get('username')
+
+        if User.objects.filter(username=user_login).exists():
             verification_code = generation_code()
-            user = User.objects.get(username=login)
+            user = User.objects.get(username=user_login)
             user.verification_code = verification_code
             user.save()
             send_message_by_phone_number(user)
@@ -153,6 +154,20 @@ def res_password(request):
             }, status=400)
 
 
+def verify_reset_code(request):
+    # try {
+    # const response = await fetch('', {
+    # method: 'POST',
+    # headers: {
+    #     'Content-Type': 'application/json',
+    #     'X-CSRFToken': '{{ csrf_token }}'
+    # },
+    # body: JSON.stringify({
+    #     username: tempUsername,
+    #     code: code
+    # })
+    # });
+    pass
 
 
 
