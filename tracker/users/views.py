@@ -6,7 +6,8 @@ from django.shortcuts import render, redirect, HttpResponse
 from django.utils import timezone
 
 from .models import User
-from .utils import has_russian_letters, validate_and_format_phone, generation_code, send_message_by_phone_number
+from .utils import has_russian_letters, validate_and_format_phone, generation_code, send_message_by_phone_number, \
+    phone_masked
 
 
 def register(request):
@@ -69,7 +70,7 @@ def register(request):
 
 def verify_code(request, user_id):
     user = User.objects.get(id=user_id)
-    context = {'phone_number': user.phone, 'user_id': user.id}
+    context = {'phone_number': phone_masked(user.phone), 'user_id': user.id}
     if request.method == "GET":
         return render(request, "verifycode.html", context)
     elif request.method == "POST":
@@ -146,7 +147,7 @@ def res_password(request):
             send_message_by_phone_number(user)
             return JsonResponse({
                 'success': True,
-                'phone_masked': user.phone})
+                'phone_masked': phone_masked(user.phone)})
         else:
             return JsonResponse({
                 'success': False,
@@ -155,20 +156,34 @@ def res_password(request):
 
 
 def verify_reset_code(request):
-    # try {
-    # const response = await fetch('', {
-    # method: 'POST',
-    # headers: {
-    #     'Content-Type': 'application/json',
-    #     'X-CSRFToken': '{{ csrf_token }}'
-    # },
-    # body: JSON.stringify({
-    #     username: tempUsername,
-    #     code: code
-    # })
-    # });
-    pass
+    data = json.loads(request.body)
+    username = data.get("username")
+    code = data.get("code")
+
+    # 1. Получаем пользователя по username
+    user = User.objects.get(username=username.strip())
+
+    if code == user.verification_code:
+        # То тут проверка пароля прошла
+        success = True
+    else:
+        success = False
+
+    return JsonResponse({'success': success})
 
 
+def res_pas(request):
+    data = json.loads(request.body)
+    username = data.get("username")
+    password = data.get("new_password")
+    confirm_pas = data.get("confirm_pas")
 
+    if password != confirm_pas:
+        success = False
 
+    else:
+        user = User.objects.get(username=username)
+        user.set_password(password)
+        success = True
+
+    return JsonResponse({'success': success})

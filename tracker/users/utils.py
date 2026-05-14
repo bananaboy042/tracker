@@ -72,3 +72,7 @@ def send_message_by_phone_number(user):
     если вы нигде не регистрировались, то просто проигнорируйте это сообщение"
     """
     print(msg_text)
+
+
+def phone_masked(phone: str) -> str:
+    return phone[:-4] + '****'
