@@ -104,7 +104,8 @@ def newcode(request, user_id):
 
 def login_user(request):
     if request.method == "GET":
-        return render(request, 'loginuser.html')
+        username = request.GET.get('username', '')
+        return render(request, 'loginuser.html', {'login': username})
     elif request.method == "POST":
         login_user = request.POST.get('username')
         password = request.POST.get('password')
@@ -119,7 +120,7 @@ def login_user(request):
                 login(request, user)
                 return redirect('tracker')
             else:
-                if User.objects.filter(username=login).exists():
+                if User.objects.filter(username=login_user).exists():
                     error = True
                     context['password_error'] = 'Неверный пароль'
                 else:
@@ -127,7 +128,7 @@ def login_user(request):
                     context['login_error'] = 'Такого пользователя не существует'
 
         if error:
-            context['login'] = login
+            context['login'] = login_user
 
         return render(request, 'loginuser.html', context=context)
 
@@ -182,8 +183,10 @@ def res_pas(request):
         success = False
 
     else:
+        print(username, password)
         user = User.objects.get(username=username)
         user.set_password(password)
+        user.save()
         success = True
 
     return JsonResponse({'success': success})
