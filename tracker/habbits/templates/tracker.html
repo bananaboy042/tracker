@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 0 auto; padding: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h1>Мои привычки 🌸</h1>
+
+        <!-- Кнопка-ссылка для добавления привычки -->
+        <a href=""
+           style="display: inline-block;
+                  background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+                  color: white;
+                  text-decoration: none;
+                  font-weight: 600;
+                  padding: 0.75rem 1.5rem;
+                  border-radius: 50px;
+                  transition: all 0.3s ease;
+                  box-shadow: 0 4px 10px rgba(255, 150, 150, 0.3);">
+            ✨ + Добавить привычку
+        </a>
+    </div>
+
+    <!-- Здесь будет список привычек -->
+    <div style="text-align: center; padding: 3rem; color: #b88c8c;">
+        <p>Здесь появится список твоих привычек</p>
+    </div>
+</div>
+{% endblock %}

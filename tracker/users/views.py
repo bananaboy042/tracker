@@ -84,14 +84,10 @@ def verify_code(request, user_id):
             context["verify_error"] = 'Неверный код. Введите правильно, либо отправьте смс заново'
             return render(request, "verifycode.html", context)
 
-def tracker(request):
-    return render(request, 'tracker.html')
-
-
-
 def logout_user(request):
     logout(request)
     return redirect('main')
+
 
 def newcode(request, user_id):
     verification_code = generation_code()
@@ -183,10 +179,11 @@ def res_pas(request):
         success = False
 
     else:
-        print(username, password)
+
         user = User.objects.get(username=username)
         user.set_password(password)
         user.save()
         success = True
 
     return JsonResponse({'success': success})
+

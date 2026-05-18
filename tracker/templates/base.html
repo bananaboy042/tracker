@@ -21,19 +21,61 @@
             color: #4a4a4a;
         }
 
-        /* Шапка с профилем */
+        /* Шапка с профилем и навигацией */
         .header {
             position: fixed;
             top: 0;
             right: 0;
             left: 0;
-            padding: 1rem 2rem;
+            padding: 0.8rem 2rem;
             display: flex;
-            justify-content: flex-end;
-            background: rgba(255, 255, 255, 0.9);
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             z-index: 1000;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        /* Навигационное меню (основные ссылки) */
+        .nav-menu {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: #4a4a4a;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-link:hover {
+            background: #fff0f0;
+            color: #ff6b9d;
+            transform: translateY(-2px);
+        }
+
+        .nav-link.active {
+            background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+            color: white;
+        }
+
+        /* Блок справа (профиль + возможно что-то еще) */
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
         }
 
         /* Контейнер для иконки профиля */
@@ -61,7 +103,7 @@
             transform: scale(1.05);
         }
 
-        /* Выпадающее меню */
+        /* Выпадающее меню (только профиль и выход) */
         .dropdown-menu {
             position: absolute;
             top: 55px;
@@ -69,7 +111,7 @@
             background: white;
             border-radius: 12px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-            min-width: 150px;
+            min-width: 180px;
             opacity: 0;
             visibility: hidden;
             transform: translateY(-10px);
@@ -114,6 +156,25 @@
             border-top: 1px solid #f0e0e0;
         }
 
+        /* Кнопка выхода в меню */
+        .logout-btn {
+            width: 100%;
+            text-align: left;
+            background: none;
+            border: none;
+            padding: 12px 20px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.95rem;
+            color: #ff6b9d;
+            transition: background 0.3s ease;
+            border-radius: 12px;
+        }
+
+        .logout-btn:hover {
+            background: #fff0f0;
+        }
+
         /* Основной контент */
         .main-content {
             min-height: 100vh;
@@ -139,6 +200,22 @@
         @media (max-width: 768px) {
             .header {
                 padding: 0.8rem 1rem;
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .nav-menu {
+                justify-content: center;
+                gap: 0.8rem;
+            }
+
+            .nav-link {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.85rem;
+            }
+
+            .header-right {
+                justify-content: flex-end;
             }
 
             .profile-icon {
@@ -148,7 +225,7 @@
             }
 
             .main-content {
-                padding: 70px 1rem 1rem 1rem;
+                padding: 120px 1rem 1rem 1rem;
             }
         }
 
@@ -158,29 +235,63 @@
     {% block head %}{% endblock %}
 </head>
 <body>
-    <!-- Шапка с профилем (показываем только авторизованным пользователям) -->
+    <!-- Шапка с навигацией и профилем (показываем только авторизованным пользователям) -->
     {% if user.is_authenticated %}
     <header class="header">
-        <div class="profile-container">
-            <div class="profile-icon" onclick="window.location.href=''">
-                👤
-            </div>
-            <div class="dropdown-menu">
-                <a href="">📊 Мой профиль ({{user.username}})</a>
-                <a href="">✅ Мои привычки</a>
-                <a href="">📈 Статистика</a>
-                <hr>
-                <form method="get" action="{% url 'logout' %}" style="margin: 0;">
-                    {% csrf_token %}
-                    <button type="submit" style="width: 100%; text-align: left; background: none; border: none;
-                     padding: 12px 20px; cursor: pointer; font-family: inherit; font-size: 0.95rem; color: #ff6b9d;">
-                        🚪 Выйти
+        <!-- Основное навигационное меню -->
+        <nav class="nav-menu">
+            <a href="" class="nav-link" id="nav-habits">
+                ✅ Мои привычки
+            </a>
+            <a href="" class="nav-link" id="nav-stats">
+                📈 Статистика
+            </a>
+            <a href="" class="nav-link" id="nav-rating">
+                🏆 Рейтинг
+            </a>
+        </nav>
 
-                    </button>
-                </form>
+        <!-- Блок справа с профилем -->
+        <div class="header-right">
+            <div class="profile-container">
+                <div class="profile-icon">
+                    👤
+                </div>
+                <div class="dropdown-menu">
+                    <a href="">👤 Мой профиль ({{ user.username }})</a>
+                    <hr>
+                    <form method="get" action="{% url 'logout' %}" style="margin: 0;">
+                        {% csrf_token %}
+                        <button type="submit" class="logout-btn">
+                            🚪 Выйти
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </header>
+
+    <!-- Скрипт для подсветки активного пункта меню -->
+    <script>
+        (function() {
+            const currentPath = window.location.pathname;
+
+            const navLinks = {
+                'habits': document.getElementById('nav-habits'),
+                'statistics': document.getElementById('nav-stats'),
+                'rating': document.getElementById('nav-rating')
+            };
+
+            // Определяем активный пункт по URL
+            if (currentPath.includes('/habits') || currentPath === '/habits/' || currentPath === '/') {
+                if (navLinks.habits) navLinks.habits.classList.add('active');
+            } else if (currentPath.includes('/statistics') || currentPath.includes('/stats')) {
+                if (navLinks.statistics) navLinks.statistics.classList.add('active');
+            } else if (currentPath.includes('/rating') || currentPath.includes('/rank')) {
+                if (navLinks.rating) navLinks.rating.classList.add('active');
+            }
+        })();
+    </script>
     {% endif %}
 
     <!-- Основной контент -->
