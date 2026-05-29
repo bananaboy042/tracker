@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Вход — Habit tracker</title>
+
     <style>
         * {
             margin: 0;
@@ -14,51 +15,85 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #fff5f5 0%, #fff0f7 100%);
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #4a4a4a;
+            background: linear-gradient(135deg, #fef5f7 0%, #fef0f5 100%);
+            position: relative;
+            color: #4a2f3a;
         }
 
-        .container {
-            max-width: 400px;
-            width: 100%;
-            padding: 1.5rem;
-            text-align: center;
+        /* Цветочки на фоне */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text x="5" y="25" font-size="22" fill="%23e8c4d0" opacity="0.3">🌸</text><text x="45" y="70" font-size="18" fill="%23f0d0d8" opacity="0.25">🌼</text><text x="75" y="40" font-size="16" fill="%23e8c4d0" opacity="0.2">🌷</text></svg>');
+            background-repeat: repeat;
+            background-size: 70px 70px;
+            pointer-events: none;
+            z-index: 0;
         }
 
+        /* Менюшка */
         .simple-menu {
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 0;
+            padding: 1rem 2rem;
             display: flex;
-            justify-content: center;
+            justify-content: flex-end;
             gap: 2rem;
-            margin-bottom: 1.5rem;
-            font-size: 0.95rem;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            z-index: 10;
+            border-bottom: 1px solid rgba(255, 200, 200, 0.3);
         }
 
         .simple-menu a {
             text-decoration: none;
-            color: #b88c8c;
+            color: #8e6b78;
+            font-weight: 500;
             transition: color 0.3s;
         }
 
         .simple-menu a:hover {
-            color: #ff6b9d;
+            color: #d9a5b3;
         }
 
+        /* Основной контейнер */
+        .login-wrapper {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6rem 2rem 3rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-container {
+            max-width: 480px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        /* Карточка входа */
         .login-card {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
+            background: white;
             border-radius: 40px;
-            padding: 2rem 1.8rem;
-            box-shadow: 0 20px 40px rgba(255, 150, 150, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.5);
+            padding: 2.5rem;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.06);
+            border: 1px solid #f2e4e8;
         }
 
+        /* Приветственный эмодзи */
         .hero-emoji {
             font-size: 3.5rem;
-            margin-bottom: 0.8rem;
+            text-align: center;
+            margin-bottom: 1rem;
             animation: wave 2s infinite;
         }
 
@@ -68,22 +103,24 @@
             75% { transform: rotate(-5deg); }
         }
 
+        /* Заголовок */
         h2 {
             font-size: 1.8rem;
             font-weight: 600;
-            margin-bottom: 0.3rem;
-            background: linear-gradient(135deg, #ff8a8a, #ff6b9d);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            text-align: center;
+            color: #4a2f3a;
+            margin-bottom: 0.5rem;
         }
 
+        /* Подзаголовок */
         .subtitle {
-            color: #a67c7c;
-            margin-bottom: 1.5rem;
+            text-align: center;
+            color: #b0949e;
             font-size: 0.95rem;
+            margin-bottom: 2rem;
         }
 
+        /* Форма */
         .form-group {
             margin-bottom: 1.2rem;
             text-align: left;
@@ -91,8 +128,8 @@
 
         label {
             display: block;
-            margin-bottom: 0.3rem;
-            color: #b85c5c;
+            margin-bottom: 0.5rem;
+            color: #5a3d4a;
             font-weight: 500;
             font-size: 0.9rem;
         }
@@ -100,47 +137,55 @@
         input {
             width: 100%;
             padding: 0.9rem 1.2rem;
-            border: 2px solid rgba(255, 200, 200, 0.5);
-            border-radius: 30px;
+            border: 1.5px solid #f0dee3;
+            border-radius: 25px;
             font-size: 0.95rem;
             background: white;
             transition: all 0.3s;
             outline: none;
+            color: #4a2f3a;
         }
 
         input:focus {
-            border-color: #ff9a9e;
-            box-shadow: 0 0 0 3px rgba(255, 154, 158, 0.2);
+            border-color: #d9a5b3;
+            box-shadow: 0 0 0 3px rgba(217, 165, 179, 0.1);
         }
 
+        input::placeholder {
+            color: #d0b8c0;
+        }
+
+        /* Кнопка входа */
         .btn-login {
             width: 100%;
-            background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+            background: #d9a5b3;
             color: white;
-            font-size: 1.2rem;
+            font-size: 1rem;
             font-weight: 600;
             padding: 1rem;
-            border-radius: 50px;
+            border-radius: 40px;
             margin: 1rem 0 0.5rem;
-            box-shadow: 0 10px 20px rgba(255, 150, 150, 0.3);
             transition: all 0.3s ease;
             border: none;
             cursor: pointer;
         }
 
         .btn-login:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 15px 30px rgba(255, 150, 150, 0.4);
+            background: #c48b9b;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(217, 165, 179, 0.3);
         }
 
+        /* Ссылки */
         .register-link {
+            text-align: center;
             margin-top: 1.2rem;
-            color: #b88c8c;
+            color: #b0949e;
             font-size: 0.9rem;
         }
 
         .register-link a {
-            color: #ff6b9d;
+            color: #d9a5b3;
             text-decoration: none;
             font-weight: 600;
         }
@@ -150,160 +195,176 @@
         }
 
         .forgot-password {
-            margin-top: 1rem;
-            font-size: 0.85rem;
+            text-align: center;
+            margin-top: 0.8rem;
+            font-size: 0.8rem;
         }
 
         .forgot-password a {
-            color: #d6a5a5;
+            color: #c8adb6;
             text-decoration: none;
         }
 
         .forgot-password a:hover {
-            color: #ff8a8a;
+            color: #d9a5b3;
             text-decoration: underline;
         }
 
+        /* Мотивационная фраза */
         .motivation {
-            margin: 1.2rem 0 0;
-            color: #d6a5a5;
-            font-style: italic;
+            text-align: center;
+            margin-top: 1.8rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #f2e4e8;
+            color: #c8adb6;
+            font-size: 0.85rem;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
-            font-size: 0.9rem;
         }
 
         .motivation span {
-            font-size: 1.1rem;
+            font-size: 1rem;
         }
 
+        /* Сообщения об ошибках */
         .errorlist {
             list-style: none;
-            color: #ff6b6b;
-            font-size: 0.85rem;
+            color: #e0868a;
+            font-size: 0.8rem;
             margin-top: 0.3rem;
             margin-left: 0.5rem;
         }
 
         .nonfield-errors {
-            background: rgba(255, 107, 107, 0.1);
+            background: #fee8e8;
             border-radius: 20px;
             padding: 0.8rem;
-            margin-bottom: 1rem;
-            color: #ff6b6b;
-            font-size: 0.9rem;
+            margin-bottom: 1.2rem;
+            color: #e0868a;
+            font-size: 0.85rem;
+            text-align: center;
         }
 
+        /* Эмодзи внизу */
         .footer-emojis {
-            margin-top: 1.5rem;
-            font-size: 1.1rem;
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 1.2rem;
             opacity: 0.5;
+            letter-spacing: 0.5rem;
         }
 
-        @media (max-width: 480px) {
-            .container {
-                padding: 1rem;
-            }
+        /* Адаптивность */
+        @media (max-width: 600px) {
             .login-card {
-                padding: 1.5rem;
+                padding: 1.8rem;
             }
+
             h2 {
-                font-size: 1.6rem;
+                font-size: 1.5rem;
+            }
+
+            .simple-menu {
+                padding: 0.8rem 1.5rem;
+            }
+
+            .login-wrapper {
+                padding: 5rem 1rem 2rem;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Простая менюшка -->
-        <div class="simple-menu">
-            <a href="{% url 'main' %}">Главная</a>
-            <a href="#">О нас</a>
-            <a href="#">Помощь</a>
-        </div>
+    <!-- Менюшка -->
+    <div class="simple-menu">
+        <a href="{% url 'main' %}">Главная</a>
+        <a href="#">О нас</a>
+        <a href="#">Помощь</a>
+    </div>
 
-        <!-- Карточка входа -->
-        <div class="login-card">
-            <!-- Приветственный эмодзи -->
-            <div class="hero-emoji">
-                🌸
-            </div>
-
-            <!-- Заголовок -->
-            <h2>С возвращением</h2>
-            <div class="subtitle">
-                Рады снова тебя видеть
-            </div>
-
-            <!-- Выводим общие ошибки формы (если есть) -->
-            {% if form.non_field_errors %}
-                <div class="nonfield-errors">
-                    {{ form.non_field_errors }}
+    <div class="login-wrapper">
+        <div class="login-container">
+            <div class="login-card">
+                <!-- Приветственный эмодзи -->
+                <div class="hero-emoji">
+                    🌸
                 </div>
-            {% endif %}
 
-            <!-- Форма входа -->
-            <form method="post" action="">
-                {% csrf_token %}
+                <!-- Заголовок -->
+                <h2>С возвращением</h2>
+                <div class="subtitle">
+                    Рады снова тебя видеть
+                </div>
 
-                <!-- Поле: Имя пользователя -->
-                <div class="form-group">
-                    <label>Имя пользователя</label>
-                    <input type="text"
-                           name="username"
-                           placeholder="Твоё имя"
-                           value="{{ login }}"
-                           autofocus
-                           required>
-                    {% if login_error %}
-                        <ul class="errorlist">
+                <!-- Выводим общие ошибки формы (если есть) -->
+                {% if form.non_field_errors %}
+                    <div class="nonfield-errors">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
 
+                <!-- Форма входа -->
+                <form method="post" action="">
+                    {% csrf_token %}
+
+                    <!-- Поле: Имя пользователя -->
+                    <div class="form-group">
+                        <label>Имя пользователя</label>
+                        <input type="text"
+                               name="username"
+                               placeholder="Твоё имя"
+                               value="{{ login|default:'' }}"
+                               autofocus
+                               required>
+                        {% if login_error %}
+                            <ul class="errorlist">
                                 <li>{{ login_error }}</li>
-                        </ul>
-                    {% endif %}
-                </div>
+                            </ul>
+                        {% endif %}
+                    </div>
 
-                <!-- Поле: Пароль -->
-                <div class="form-group">
-                    <label>Пароль</label>
-                    <input type="password"
-                           name="password"
-                           placeholder="••••••••"
-                           required>
-                    {% if password_error %}
-                        <ul class="errorlist">
+                    <!-- Поле: Пароль -->
+                    <div class="form-group">
+                        <label>Пароль</label>
+                        <input type="password"
+                               name="password"
+                               placeholder="••••••••"
+                               required>
+                        {% if password_error %}
+                            <ul class="errorlist">
                                 <li>{{ password_error }}</li>
-                        </ul>
-                    {% endif %}
+                            </ul>
+                        {% endif %}
+                    </div>
+
+                    <!-- Кнопка входа -->
+                    <button type="submit" class="btn-login">
+                        🔑 Войти
+                    </button>
+                </form>
+
+                <!-- Ссылки -->
+                <div class="register-link">
+                    Нет аккаунта? <a href="{% url 'register' %}">Зарегистрироваться</a>
                 </div>
 
-                <!-- Кнопка входа -->
-                <button type="submit" class="btn-login">
-                    🔑 Войти
-                </button>
-            </form>
+                <div class="forgot-password">
+                    <a href="{% url 'res_password' %}">Забыли пароль?</a>
+                </div>
 
-            <!-- Ссылки -->
-            <div class="register-link">
-                Нет аккаунта? <a href="{% url 'register' %}">Зарегистрироваться</a>
+                <!-- Мотивационная фраза -->
+                <div class="motivation">
+                    <span>💫</span> Рады видеть тебя снова
+                    <span>💫</span>
+                </div>
             </div>
 
-            <div class="forgot-password">
-                <a href="{% url 'res_password' %}">Забыли пароль?</a>
+            <!-- Эмодзи в подвале -->
+            <div class="footer-emojis">
+                🌸  🌿  🌼
             </div>
-
-            <!-- Мотивационная фраза -->
-            <div class="motivation">
-                <span>💫</span> Рады видеть тебя снова
-                <span>💫</span>
-            </div>
-        </div>
-
-        <!-- Эмодзи в подвале -->
-        <div class="footer-emojis">
-            🌸  🌿  🌼
         </div>
     </div>
 </body>

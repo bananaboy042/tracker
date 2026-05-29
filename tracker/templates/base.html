@@ -16,9 +16,33 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #fff5f5 0%, #fff0f7 100%);
             min-height: 100vh;
             color: #4a4a4a;
+            position: relative;
+            background: linear-gradient(135deg, #fff5f5 0%, #fff0f7 100%);
+        }
+
+        /* Цветочки на всём фоне */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 150"><text x="0" y="30" font-size="30" fill="%23ffb7c5" opacity="0.12">🌸</text><text x="50" y="80" font-size="25" fill="%23ffc4d0" opacity="0.1">🌼</text><text x="20" y="130" font-size="28" fill="%23ffb7c5" opacity="0.08">🌷</text></svg>');
+            background-repeat: repeat;
+            background-size: 80px 80px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Контент поверх цветочков */
+        .content-wrapper {
+            position: relative;
+            z-index: 1;
+            padding-top: 80px;
+            background: transparent;
         }
 
         /* Шапка с профилем и навигацией */
@@ -31,18 +55,32 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(12px);
             z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
             flex-wrap: wrap;
             gap: 1rem;
+            border-bottom: none;
+            box-shadow: 0 2px 20px rgba(255, 150, 150, 0.06);
         }
 
-        /* Навигационное меню (основные ссылки) */
+        /* Эффект затухания - через псевдоэлемент, который НЕ МЕШАЕТ кликам */
+        .header::after {
+            content: "";
+            position: absolute;
+            bottom: -30px;
+            left: 0;
+            right: 0;
+            height: 30px;
+            background: linear-gradient(to bottom, rgba(255, 245, 245, 0.8), transparent);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Навигационное меню */
         .nav-menu {
             display: flex;
-            gap: 1.5rem;
+            gap: 0.5rem;
             align-items: center;
             flex-wrap: wrap;
         }
@@ -51,8 +89,8 @@
             text-decoration: none;
             color: #4a4a4a;
             font-weight: 500;
-            padding: 0.5rem 1rem;
-            border-radius: 25px;
+            padding: 0.5rem 1.2rem;
+            border-radius: 50px;
             transition: all 0.3s ease;
             font-size: 0.95rem;
             display: flex;
@@ -61,7 +99,7 @@
         }
 
         .nav-link:hover {
-            background: #fff0f0;
+            background: rgba(255, 240, 240, 0.9);
             color: #ff6b9d;
             transform: translateY(-2px);
         }
@@ -71,20 +109,20 @@
             color: white;
         }
 
-        /* Блок справа (профиль + возможно что-то еще) */
+        /* Блок справа - прижат к краю */
         .header-right {
             display: flex;
             align-items: center;
             gap: 1rem;
+            margin-left: auto;
         }
 
-        /* Контейнер для иконки профиля */
+        /* Профиль - контейнер для hover */
         .profile-container {
             position: relative;
             display: inline-block;
         }
 
-        /* Иконка профиля */
         .profile-icon {
             width: 45px;
             height: 45px;
@@ -94,128 +132,96 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: transform 0.3s ease;
+            transition: all 0.3s ease;
             font-size: 1.5rem;
-            box-shadow: 0 4px 10px rgba(255, 150, 150, 0.2);
+            box-shadow: 0 4px 15px rgba(255, 150, 150, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.6);
         }
 
         .profile-icon:hover {
             transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(255, 150, 150, 0.25);
         }
 
-        /* Выпадающее меню (только профиль и выход) */
+        /* Выпадающее меню */
         .dropdown-menu {
             position: absolute;
             top: 55px;
             right: 0;
             background: white;
-            border-radius: 12px;
+            border-radius: 20px;
+            padding: 0.5rem;
+            min-width: 160px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-            min-width: 180px;
+            border: 1px solid rgba(255, 180, 180, 0.4);
             opacity: 0;
             visibility: hidden;
             transform: translateY(-10px);
             transition: all 0.3s ease;
             z-index: 1001;
+            pointer-events: none;
         }
 
-        .profile-container:hover .dropdown-menu {
+        /* Показываем меню при наведении */
+        .profile-container:hover .dropdown-menu,
+        .dropdown-menu:hover {
             opacity: 1;
             visibility: visible;
             transform: translateY(0);
+            pointer-events: auto;
         }
 
-        .dropdown-menu a {
-            display: block;
-            padding: 12px 20px;
-            text-decoration: none;
-            color: #4a4a4a;
-            transition: background 0.3s ease;
-            border-radius: 12px;
-            font-size: 0.95rem;
+        /* Мостик между иконкой и меню */
+        .dropdown-menu::before {
+            content: "";
+            position: absolute;
+            top: -10px;
+            right: 10px;
+            width: 30px;
+            height: 10px;
+            background: transparent;
         }
 
-        .dropdown-menu a:first-child {
-            border-top-left-radius: 12px;
-            border-top-right-radius: 12px;
-        }
-
-        .dropdown-menu a:last-child {
-            border-bottom-left-radius: 12px;
-            border-bottom-right-radius: 12px;
-        }
-
-        .dropdown-menu a:hover {
-            background: #fff0f0;
-            color: #ff6b9d;
-        }
-
-        .dropdown-menu hr {
-            margin: 5px 0;
-            border: none;
-            border-top: 1px solid #f0e0e0;
-        }
-
-        /* Кнопка выхода в меню */
-        .logout-btn {
-            width: 100%;
-            text-align: left;
-            background: none;
-            border: none;
-            padding: 12px 20px;
-            cursor: pointer;
-            font-family: inherit;
-            font-size: 0.95rem;
-            color: #ff6b9d;
-            transition: background 0.3s ease;
-            border-radius: 12px;
-        }
-
-        .logout-btn:hover {
-            background: #fff0f0;
-        }
-
-        /* Основной контент */
-        .main-content {
-            min-height: 100vh;
+        .dropdown-item {
             display: flex;
             align-items: center;
-            justify-content: center;
-            padding: 80px 2rem 2rem 2rem;
+            gap: 0.75rem;
+            padding: 0.7rem 1rem;
+            text-decoration: none;
+            color: #4a4a4a;
+            border-radius: 15px;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+            cursor: pointer;
         }
 
-        /* Класс для анонимного пользователя (без отступа сверху) */
-        .main-content.anonymous {
-            padding-top: 2rem;
+        .dropdown-item:hover {
+            background: rgba(255, 200, 200, 0.4);
+            color: #ff6b9d;
         }
 
-        /* Контейнер для контента */
-        .content-container {
-            max-width: 1200px;
-            width: 100%;
-            margin: 0 auto;
+        .dropdown-divider {
+            height: 1px;
+            background: rgba(255, 180, 180, 0.4);
+            margin: 0.3rem 0;
         }
 
-        /* Адаптивность */
+        .content-wrapper > :first-child {
+            margin-top: 0;
+        }
+
         @media (max-width: 768px) {
             .header {
-                padding: 0.8rem 1rem;
-                flex-direction: column;
-                align-items: stretch;
+                padding: 0.6rem 1rem;
             }
 
             .nav-menu {
-                justify-content: center;
-                gap: 0.8rem;
+                gap: 0.3rem;
             }
 
             .nav-link {
                 padding: 0.4rem 0.8rem;
                 font-size: 0.85rem;
-            }
-
-            .header-right {
-                justify-content: flex-end;
             }
 
             .profile-icon {
@@ -224,84 +230,54 @@
                 font-size: 1.2rem;
             }
 
-            .main-content {
-                padding: 120px 1rem 1rem 1rem;
+            .content-wrapper {
+                padding-top: 70px;
+            }
+
+            .dropdown-menu {
+                top: 45px;
+                min-width: 140px;
             }
         }
-
-        {% block extra_css %}{% endblock %}
     </style>
-
-    {% block head %}{% endblock %}
 </head>
 <body>
-    <!-- Шапка с навигацией и профилем (показываем только авторизованным пользователям) -->
-    {% if user.is_authenticated %}
-    <header class="header">
-        <!-- Основное навигационное меню -->
-        <nav class="nav-menu">
-            <a href="" class="nav-link" id="nav-habits">
-                ✅ Мои привычки
+    <!-- Шапка -->
+    <div class="header">
+        <div class="nav-menu">
+            <a href="url 'tracker' " class="nav-link">
+                🏠 Главная
             </a>
-            <a href="" class="nav-link" id="nav-stats">
-                📈 Статистика
+            <a href="#" class="nav-link">
+                📋 Привычки
             </a>
-            <a href="" class="nav-link" id="nav-rating">
-                🏆 Рейтинг
+            <a href="#" class="nav-link">
+                📊 Статистика
             </a>
-        </nav>
+        </div>
 
-        <!-- Блок справа с профилем -->
         <div class="header-right">
             <div class="profile-container">
                 <div class="profile-icon">
                     👤
                 </div>
                 <div class="dropdown-menu">
-                    <a href="">👤 Мой профиль ({{ user.username }})</a>
-                    <hr>
-                    <form method="get" action="{% url 'logout' %}" style="margin: 0;">
-                        {% csrf_token %}
-                        <button type="submit" class="logout-btn">
-                            🚪 Выйти
-                        </button>
-                    </form>
+                    <a href="#" class="dropdown-item">
+                        ⚙️ Профиль
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a href="url 'logout' " class="dropdown-item">
+                        🚪 Выйти
+                    </a>
                 </div>
             </div>
         </div>
-    </header>
-
-    <!-- Скрипт для подсветки активного пункта меню -->
-    <script>
-        (function() {
-            const currentPath = window.location.pathname;
-
-            const navLinks = {
-                'habits': document.getElementById('nav-habits'),
-                'statistics': document.getElementById('nav-stats'),
-                'rating': document.getElementById('nav-rating')
-            };
-
-            // Определяем активный пункт по URL
-            if (currentPath.includes('/habits') || currentPath === '/habits/' || currentPath === '/') {
-                if (navLinks.habits) navLinks.habits.classList.add('active');
-            } else if (currentPath.includes('/statistics') || currentPath.includes('/stats')) {
-                if (navLinks.statistics) navLinks.statistics.classList.add('active');
-            } else if (currentPath.includes('/rating') || currentPath.includes('/rank')) {
-                if (navLinks.rating) navLinks.rating.classList.add('active');
-            }
-        })();
-    </script>
-    {% endif %}
+    </div>
 
     <!-- Основной контент -->
-    <main class="main-content {% if not user.is_authenticated %}anonymous{% endif %}">
-        <div class="content-container">
-            {% block content %}
-            {% endblock %}
-        </div>
-    </main>
-
-    {% block scripts %}{% endblock %}
+    <div class="content-wrapper">
+        {% block content %}
+        {% endblock %}
+    </div>
 </body>
 </html>

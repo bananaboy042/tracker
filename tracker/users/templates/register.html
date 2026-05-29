@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Регистрация — Habit tracker</title>
+
     <style>
         * {
             margin: 0;
@@ -14,52 +15,84 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #fff5f5 0%, #fff0f7 100%);
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #4a4a4a;
+            background: linear-gradient(135deg, #fef5f7 0%, #fef0f5 100%);
+            position: relative;
+            color: #4a2f3a;
         }
 
-        .container {
-            max-width: 400px;
-            padding: 2rem;
-            text-align: center;
+        /* Цветочки на фоне */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text x="5" y="25" font-size="22" fill="%23e8c4d0" opacity="0.3">🌸</text><text x="45" y="70" font-size="18" fill="%23f0d0d8" opacity="0.25">🌼</text><text x="75" y="40" font-size="16" fill="%23e8c4d0" opacity="0.2">🌷</text></svg>');
+            background-repeat: repeat;
+            background-size: 70px 70px;
+            pointer-events: none;
+            z-index: 0;
         }
 
-        /* Простая менюшка */
+        /* Менюшка */
         .simple-menu {
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 0;
+            padding: 1rem 2rem;
             display: flex;
-            justify-content: center;
+            justify-content: flex-end;
             gap: 2rem;
-            margin-bottom: 2rem;
-            font-size: 1rem;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            z-index: 10;
+            border-bottom: 1px solid rgba(255, 200, 200, 0.3);
         }
 
         .simple-menu a {
             text-decoration: none;
-            color: #b88c8c;
+            color: #8e6b78;
+            font-weight: 500;
             transition: color 0.3s;
         }
 
         .simple-menu a:hover {
-            color: #ff6b9d;
+            color: #d9a5b3;
+        }
+
+        /* Основной контейнер */
+        .register-wrapper {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6rem 2rem 3rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .register-container {
+            max-width: 520px;
+            width: 100%;
+            margin: 0 auto;
         }
 
         /* Карточка регистрации */
         .register-card {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(10px);
+            background: white;
             border-radius: 40px;
-            padding: 2.5rem 2rem;
-            box-shadow: 0 20px 40px rgba(255, 150, 150, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.5);
+            padding: 2.5rem;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.06);
+            border: 1px solid #f2e4e8;
         }
 
         /* Приветственный эмодзи */
         .hero-emoji {
-            font-size: 4rem;
+            font-size: 3.5rem;
+            text-align: center;
             margin-bottom: 1rem;
             animation: wave 2s infinite;
         }
@@ -72,83 +105,87 @@
 
         /* Заголовок */
         h2 {
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-weight: 600;
+            text-align: center;
+            color: #4a2f3a;
             margin-bottom: 0.5rem;
-            background: linear-gradient(135deg, #ff8a8a, #ff6b9d);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
         }
 
         /* Подзаголовок */
         .subtitle {
-            color: #a67c7c;
+            text-align: center;
+            color: #b0949e;
+            font-size: 0.95rem;
             margin-bottom: 2rem;
-            font-size: 1rem;
         }
 
         /* Форма */
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.2rem;
             text-align: left;
         }
 
         label {
             display: block;
             margin-bottom: 0.5rem;
-            color: #b85c5c;
+            color: #5a3d4a;
             font-weight: 500;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
         }
 
         input {
             width: 100%;
-            padding: 1rem;
-            border: 2px solid rgba(255, 200, 200, 0.5);
-            border-radius: 30px;
-            font-size: 1rem;
-            background: rgba(255, 255, 255, 0.9);
+            padding: 0.9rem 1.2rem;
+            border: 1.5px solid #f0dee3;
+            border-radius: 25px;
+            font-size: 0.95rem;
+            background: white;
             transition: all 0.3s;
             outline: none;
+            color: #4a2f3a;
         }
 
         input:focus {
-            border-color: #ff9a9e;
-            box-shadow: 0 0 0 3px rgba(255, 154, 158, 0.2);
+            border-color: #d9a5b3;
+            box-shadow: 0 0 0 3px rgba(217, 165, 179, 0.1);
+        }
+
+        input::placeholder {
+            color: #d0b8c0;
         }
 
         /* Кнопка регистрации */
         .btn-register {
             width: 100%;
-            background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+            background: #d9a5b3;
             color: white;
-            text-decoration: none;
-            font-size: 1.2rem;
+            font-size: 1rem;
             font-weight: 600;
             padding: 1rem;
-            border-radius: 50px;
-            margin: 1rem 0;
-            box-shadow: 0 10px 20px rgba(255, 150, 150, 0.3);
+            border-radius: 40px;
+            margin: 1rem 0 0.5rem;
             transition: all 0.3s ease;
             border: none;
             cursor: pointer;
         }
 
         .btn-register:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 15px 30px rgba(255, 150, 150, 0.4);
+            background: #c48b9b;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(217, 165, 179, 0.3);
         }
 
         /* Ссылка на вход */
         .login-link {
+            text-align: center;
             margin-top: 1.5rem;
-            color: #b88c8c;
-            font-size: 0.95rem;
+            color: #b0949e;
+            font-size: 0.9rem;
         }
 
         .login-link a {
-            color: #ff6b9d;
+            color: #d9a5b3;
             text-decoration: none;
             font-weight: 600;
         }
@@ -159,9 +196,12 @@
 
         /* Мотивационная фраза */
         .motivation {
-            margin: 2rem 0 0;
-            color: #d6a5a5;
-            font-style: italic;
+            text-align: center;
+            margin-top: 1.8rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #f2e4e8;
+            color: #c8adb6;
+            font-size: 0.85rem;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -169,123 +209,177 @@
         }
 
         .motivation span {
-            font-size: 1.2rem;
+            font-size: 1rem;
         }
 
         /* Сообщения об ошибках */
         .errorlist {
             list-style: none;
-            color: #ff6b6b;
-            font-size: 0.9rem;
+            color: #e0868a;
+            font-size: 0.8rem;
             margin-top: 0.3rem;
+            margin-left: 0.5rem;
         }
 
-        /* Маленькие эмодзи внизу */
+        /* Помощь для телефона */
+        .phone-help {
+            font-size: 0.7rem;
+            color: #c8adb6;
+            margin-top: 0.3rem;
+            margin-left: 0.5rem;
+        }
+
+        /* Эмодзи внизу */
         .footer-emojis {
+            text-align: center;
             margin-top: 2rem;
             font-size: 1.2rem;
             opacity: 0.5;
+            letter-spacing: 0.5rem;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 600px) {
+            .register-card {
+                padding: 1.8rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            .simple-menu {
+                padding: 0.8rem 1.5rem;
+            }
+
+            .register-wrapper {
+                padding: 5rem 1rem 2rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Простая менюшка -->
-        <div class="simple-menu">
-            <a href="">Главная</a>
-            <a href="#">О нас</a>
-            <a href="#">Помощь</a>
-        </div>
+    <!-- Менюшка -->
+    <div class="simple-menu">
+        <a href="{% url 'main' %}">Главная</a>
+        <a href="#">О нас</a>
+        <a href="#">Помощь</a>
+    </div>
 
-        <!-- Карточка регистрации -->
-        <div class="register-card">
-            <!-- Приветственный эмодзи -->
-            <div class="hero-emoji">
-                🌱
-            </div>
-
-            <!-- Заголовок -->
-            <h2>Создать аккаунт</h2>
-            <div class="subtitle">
-                Начни свой путь к новым привычкам
-            </div>
-
-            <!-- Форма регистрации -->
-            <form method="post">
-                {% csrf_token %}
-
-                <!-- Поле: Имя пользователя -->
-                <div class="form-group">
-                    <label>Логин</label>
-                    <input type="text" name="username" placeholder="Придумай имя" value="{{login}}" required>
-                    {% if login_error %}
-                        <ul class="errorlist">
-                                <li>{{login_error}}</li>
-                        </ul>
-                    {% endif %}
-                    {% if duplicate_error %}
-                        <ul class="errorlist">
-                                <li>{{duplicate_error}}</li>
-                        </ul>
-                    {% endif %}
+    <div class="register-wrapper">
+        <div class="register-container">
+            <div class="register-card">
+                <!-- Приветственный эмодзи -->
+                <div class="hero-emoji">
+                    🌸
                 </div>
 
-                 <div class="form-group">
-                    <label>Номер телефона </label>
-                    <input type="tel"
-                           name="phone_number"
-                           placeholder="+7 (999) 123-45-67"
-                           value="{{number}}"
-                           class="phone-input" required>
-                    {% if phone_error %}
-                        <ul class="errorlist">
-                            <li>{{ phone_error }}</li>
-                        </ul>
-                    {% endif %}
-
+                <!-- Заголовок -->
+                <h2>Создать аккаунт</h2>
+                <div class="subtitle">
+                    Начни свой путь к новым привычкам
                 </div>
 
+                <!-- Форма регистрации -->
+                <form method="post">
+                    {% csrf_token %}
 
-                <!-- Поле: Пароль -->
-                <div class="form-group">
-                    <label>Пароль</label>
-                    <input type="password" name="password1" placeholder="••••••••" required>
+                    <!-- Поле: Логин -->
+                    <div class="form-group">
+                        <label>Логин</label>
+                        <input type="text"
+                               name="username"
+                               placeholder="Придумай имя"
+                               value="{{ login|default:'' }}"
+                               required>
+                        {% if login_error %}
+                            <ul class="errorlist">
+                                <li>{{ login_error }}</li>
+                            </ul>
+                        {% endif %}
+                        {% if duplicate_error %}
+                            <ul class="errorlist">
+                                <li>{{ duplicate_error }}</li>
+                            </ul>
+                        {% endif %}
+                    </div>
 
-                </div>
+                    <!-- Поле: Номер телефона -->
+                    <div class="form-group">
+                        <label>Номер телефона</label>
+                        <input type="tel"
+                               name="phone_number"
+                               placeholder="+7 (999) 123-45-67"
+                               value="{{ number|default:'' }}"
+                               class="phone-input">
+                        <div class="phone-help"></div>
+                        {% if phone_error %}
+                            <ul class="errorlist">
+                                <li>{{ phone_error }}</li>
+                            </ul>
+                        {% endif %}
+                    </div>
 
-                <!-- Поле: Подтверждение пароля -->
-                <div class="form-group">
-                    <label>Повтори пароль</label>
-                    <input type="password" name="password2" placeholder="••••••••" required>
-                    {% if password_error %}
-                        <ul class="errorlist">
+                    <!-- Поле: Пароль -->
+                    <div class="form-group">
+                        <label>Пароль</label>
+                        <input type="password"
+                               name="password1"
+                               placeholder="••••••••"
+                               required>
+                    </div>
+
+                    <!-- Поле: Подтверждение пароля -->
+                    <div class="form-group">
+                        <label>Повтори пароль</label>
+                        <input type="password"
+                               name="password2"
+                               placeholder="••••••••"
+                               required>
+                        {% if password_error %}
+                            <ul class="errorlist">
                                 <li>{{ password_error }}</li>
-                        </ul>
-                    {% endif %}
+                            </ul>
+                        {% endif %}
+                    </div>
+
+                    <!-- Кнопка -->
+                    <button type="submit" class="btn-register">
+                        ✨ Начать
+                    </button>
+                </form>
+
+                <!-- Ссылка на вход -->
+                <div class="login-link">
+                    Уже есть аккаунт? <a href="{% url 'loginuser' %}">Войти</a>
                 </div>
 
-                <!-- Кнопка -->
-                <button type="submit" class="btn-register">
-                    ✨ Начать
-                </button>
-            </form>
-
-            <!-- Ссылка на вход -->
-            <div class="login-link">
-                Уже есть аккаунт? <a href="{% url 'loginuser' %}">Войти</a>
+                <!-- Мотивационная фраза -->
+                <div class="motivation">
+                    <span>💫</span> Твой первый шаг к новым привычкам
+                    <span>💫</span>
+                </div>
             </div>
 
-            <!-- Мотивационная фраза -->
-            <div class="motivation">
-                <span>💫</span> Твой первый шаг к новым привычкам
-                <span>💫</span>
+            <!-- Эмодзи в подвале -->
+            <div class="footer-emojis">
+                🌸  🌿  🌼
             </div>
-        </div>
-
-        <!-- Эмодзи в подвале -->
-        <div class="footer-emojis">
-            🌸  🌿  🌼
         </div>
     </div>
+
+    <!-- Простая маска для телефона -->
+    <script>
+        const phoneInput = document.querySelector('.phone-input');
+        if (phoneInput) {
+            phoneInput.addEventListener('input', function(e) {
+                let value = this.value.replace(/[^\d+]/g, '');
+                if (value.length > 12) {
+                    value = value.slice(0, 12);
+                }
+                this.value = value;
+            });
+        }
+    </script>
 </body>
 </html>
