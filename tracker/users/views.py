@@ -50,22 +50,6 @@ def register(request):
 
         send_message_by_phone_number(user)
 
-
-
-        """
-        редирект на строницу  в котором пользователь будет вводить код из смс, в котором будет кнопка отправить код повторно
-        ВАЖНО! В УРЛЕ ПЕРЕДАТЬ ID пользователя
-        return redirect(f'/verify-code/{user.id}/')
-        
-        мы 
-        
-        Если пользователь нажал отправить код повторно
-        1) Мыц должны сгенерировать новый код
-        2) Обновить запись о коде в БД
-        3) отправить ему новую СМС
-        
-        """
-
         return redirect('verifycode', user_id=user.id)
 
 def verify_code(request, user_id):
