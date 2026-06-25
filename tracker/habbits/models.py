@@ -1,4 +1,5 @@
 from django.db.models import Model, CharField, TextField, ForeignKey, PROTECT, DateField, JSONField
+from django.utils.safestring import mark_safe
 from django.utils.timezone import now
 from django.core.exceptions import ValidationError
 
@@ -6,6 +7,13 @@ from django.core.exceptions import ValidationError
 class Color(Model):
     name = CharField(max_length=50, verbose_name="Название цвета")
     hex_code = CharField(max_length=7, unique=True, verbose_name="HEX код цвета")
+
+    def color_preview(self):
+        return mark_safe(
+            f'<div style="background-color: {self.hex_code}; width: 30px; height: 30px; border: 1px solid #ddd;"></div>'
+        )
+
+    color_preview.short_description = 'Цвет'
 
 
 class Habbit(Model):
