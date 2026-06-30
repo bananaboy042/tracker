@@ -1,1 +1,565 @@
-<h1>Шаблон</h1>
+<!-- habit_create.html -->
+{% extends 'base.html' %}
+
+{% block title %}Новая привычка — Habit tracker{% endblock %}
+
+{% block content %}
+<div class="habit-wrapper">
+    <div class="habit-container">
+        <div class="habit-card">
+            <div class="habit-header">
+                <div class="hero-emoji">🌱</div>
+                <h2>Новая привычка</h2>
+                <p class="subtitle">Создай привычку, которая изменит твою жизнь</p>
+            </div>
+
+            <form method="post" class="habit-form">
+                {% csrf_token %}
+
+                <!-- Название -->
+                <div class="form-group">
+                    <label for="name">Название привычки <span class="required">*</span></label>
+                    <input type="text"
+                           id="name"
+                           name="name"
+                           placeholder="Например: Утренняя зарядка"
+                           value="{{ name|default:'' }}"
+                           required
+                           autofocus>
+                    {% if errors.name %}
+                        <ul class="errorlist">
+                            <li>{{ errors.name }}</li>
+                        </ul>
+                    {% endif %}
+                </div>
+
+                <!-- Описание -->
+                <div class="form-group">
+                    <label for="description">Описание</label>
+                    <textarea id="description"
+                              name="description"
+                              rows="3"
+                              placeholder="Расскажи, что нужно делать...">{{ description|default:'' }}</textarea>
+                    {% if errors.description %}
+                        <ul class="errorlist">
+                            <li>{{ errors.description }}</li>
+                        </ul>
+                    {% endif %}
+                </div>
+
+                <!-- Цвет -->
+                <div class="form-group">
+    <label>Цвет привычки <span class="required">*</span></label>
+
+    <!-- Для отладки: покажи список цветов -->
+    {% if colors %}
+    <div class="color-grid">
+        {% for color in colors %}
+        <label class="color-option {% if selected_color == color.id %}selected{% endif %}">
+            <input type="radio"
+                   name="color"
+                   value="{{ color.id }}"
+                   {% if selected_color == color.id %}checked{% endif %}
+                   required>
+            <span class="color-preview"
+                  style="background-color: {% if color.hex_code %}{{ color.hex_code }}{% else %}#cccccc{% endif %};">
+            </span>
+            <span class="color-name">{{ color.name }}</span>
+        </label>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="no-colors">
+        <p style="color: #e0868a;">⚠️ Цвета не найдены. Добавьте цвета в базу данных.</p>
+    </div>
+    {% endif %}
+
+    {% if errors.color %}
+        <ul class="errorlist">
+            <li>{{ errors.color }}</li>
+        </ul>
+    {% endif %}
+</div>
+
+                <!-- Дата начала -->
+                <div class="form-row">
+                    <div class="form-group half">
+                        <label for="start_date">Дата начала <span class="required">*</span></label>
+                        <input type="date"
+                               id="start_date"
+                               name="start_date"
+                               value="{{ start_date|default:'' }}"
+                               required>
+                        {% if errors.start_date %}
+                            <ul class="errorlist">
+                                <li>{{ errors.start_date }}</li>
+                            </ul>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group half">
+                        <label for="end_date">Дата окончания</label>
+                        <input type="date"
+                               id="end_date"
+                               name="end_date"
+                               value="{{ end_date|default:'' }}">
+                        {% if errors.end_date %}
+                            <ul class="errorlist">
+                                <li>{{ errors.end_date }}</li>
+                            </ul>
+                        {% endif %}
+                        <div class="help-text">Необязательно</div>
+                    </div>
+                </div>
+
+                <!-- Периодичность -->
+                <div class="form-group">
+                    <label>Периодичность <span class="required">*</span></label>
+
+                    <div class="frequency-group">
+                        <!-- Ежедневно -->
+                        <div class="frequency-option">
+                            <label class="radio-label">
+                                <input type="radio"
+                                       name="frequency_type"
+                                       value="daily"
+                                       {% if frequency_type == 'daily' or not frequency_type %}checked{% endif %}
+                                       data-frequency="daily">
+                                Ежедневно
+                            </label>
+                            <div class="frequency-settings daily-settings">
+                                <label>
+                                    Интервал (дней):
+                                    <input type="number"
+                                           name="daily_interval"
+                                           value="{{ daily_interval|default:'1' }}"
+                                           min="1"
+                                           class="small-input">
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Еженедельно -->
+                        <div class="frequency-option">
+                            <label class="radio-label">
+                                <input type="radio"
+                                       name="frequency_type"
+                                       value="weekly"
+                                       {% if frequency_type == 'weekly' %}checked{% endif %}
+                                       data-frequency="weekly">
+                                Еженедельно
+                            </label>
+                            <div class="frequency-settings weekly-settings" style="{% if frequency_type != 'weekly' %}display:none;{% endif %}">
+                                <div class="days-checkboxes">
+                                    <label><input type="checkbox" name="week_days" value="1" {% if '1' in week_days %}checked{% endif %}> Пн</label>
+                                    <label><input type="checkbox" name="week_days" value="2" {% if '2' in week_days %}checked{% endif %}> Вт</label>
+                                    <label><input type="checkbox" name="week_days" value="3" {% if '3' in week_days %}checked{% endif %}> Ср</label>
+                                    <label><input type="checkbox" name="week_days" value="4" {% if '4' in week_days %}checked{% endif %}> Чт</label>
+                                    <label><input type="checkbox" name="week_days" value="5" {% if '5' in week_days %}checked{% endif %}> Пт</label>
+                                    <label><input type="checkbox" name="week_days" value="6" {% if '6' in week_days %}checked{% endif %}> Сб</label>
+                                    <label><input type="checkbox" name="week_days" value="7" {% if '7' in week_days %}checked{% endif %}> Вс</label>
+                                </div>
+                                {% if errors.week_days %}
+                                    <ul class="errorlist">
+                                        <li>{{ errors.week_days }}</li>
+                                    </ul>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Ежемесячно -->
+                        <div class="frequency-option">
+                            <label class="radio-label">
+                                <input type="radio"
+                                       name="frequency_type"
+                                       value="monthly"
+                                       {% if frequency_type == 'monthly' %}checked{% endif %}
+                                       data-frequency="monthly">
+                                Ежемесячно
+                            </label>
+                            <div class="frequency-settings monthly-settings" style="{% if frequency_type != 'monthly' %}display:none;{% endif %}">
+                                <label>
+                                    Число месяца:
+                                    <input type="number"
+                                           name="monthly_day"
+                                           value="{{ monthly_day|default:'1' }}"
+                                           min="1"
+                                           max="31"
+                                           class="small-input">
+                                </label>
+                                {% if errors.monthly_day %}
+                                    <ul class="errorlist">
+                                        <li>{{ errors.monthly_day }}</li>
+                                    </ul>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% if errors.frequency %}
+                        <ul class="errorlist">
+                            <li>{{ errors.frequency }}</li>
+                        </ul>
+                    {% endif %}
+                </div>
+
+                <!-- Кнопки -->
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">
+                        ✨ Создать привычку
+                    </button>
+                    <a href="" class="btn-secondary">
+                        Отмена
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.habit-wrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 2rem 1.5rem;
+    position: relative;
+    z-index: 1;
+}
+
+.habit-container {
+    max-width: 600px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.habit-card {
+    background: white;
+    border-radius: 40px;
+    padding: 2.5rem;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.06);
+    border: 1px solid #f2e4e8;
+}
+
+.habit-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.hero-emoji {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.habit-header h2 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #4a2f3a;
+    margin-bottom: 0.3rem;
+}
+
+.habit-header .subtitle {
+    color: #b0949e;
+    font-size: 0.95rem;
+}
+
+/* Форма */
+.habit-form .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.habit-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #5a3d4a;
+    font-weight: 500;
+    font-size: 0.9rem;
+
+}
+
+.habit-form input[type="text"],
+.habit-form input[type="date"],
+.habit-form input[type="number"],
+.habit-form textarea,
+.habit-form select {
+    width: 100%;
+    padding: 0.9rem 1.2rem;
+    border: 1.5px solid #f0dee3;
+    border-radius: 25px;
+    font-size: 0.95rem;
+    background: white;
+    transition: all 0.3s;
+    outline: none;
+    color: #4a2f3a;
+    font-family: inherit;
+}
+
+.habit-form input:focus,
+.habit-form textarea:focus {
+    border-color: #d9a5b3;
+    box-shadow: 0 0 0 3px rgba(217, 165, 179, 0.1);
+}
+
+.habit-form textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.habit-form .required {
+    color: #e0868a;
+}
+
+/* Цвета */
+.color-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 0.7rem;
+}
+
+.color-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.5rem;
+    border: 2px solid #f0dee3;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.3s;
+    background: white;
+}
+
+.color-option:hover {
+    border-color: #d9a5b3;
+}
+
+.color-option.selected {
+    border-color: #d9a5b3;
+    background: #fef5f7;
+}
+
+.color-option input[type="radio"] {
+    display: none;
+}
+
+.color-preview {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid #f0dee3;
+    transition: all 0.3s;
+}
+
+.color-option.selected .color-preview {
+    border-color: #d9a5b3;
+    transform: scale(1.1);
+}
+
+.color-name {
+    font-size: 0.7rem;
+    color: #b0949e;
+}
+
+/* Ряды */
+.form-row {
+    display: flex;
+    gap: 1rem;
+}
+
+.form-group.half {
+    flex: 1;
+}
+
+/* Периодичность */
+.frequency-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.frequency-option {
+    padding: 0.8rem 1rem;
+    border: 1.5px solid #f0dee3;
+    border-radius: 20px;
+    transition: all 0.3s;
+}
+
+.frequency-option:has(input:checked) {
+    border-color: #d9a5b3;
+    background: #fef5f7;
+}
+
+.radio-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-weight: 500;
+    color: #5a3d4a;
+}
+
+.radio-label input[type="radio"] {
+    width: auto;
+    accent-color: #d9a5b3;
+}
+
+.frequency-settings {
+    margin-top: 0.8rem;
+    padding-left: 2rem;
+}
+
+.days-checkboxes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.days-checkboxes label {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-weight: 400;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.days-checkboxes input[type="checkbox"] {
+    width: auto;
+    accent-color: #d9a5b3;
+}
+
+.small-input {
+    width: 70px !important;
+    display: inline-block;
+    margin-left: 0.5rem;
+}
+
+.color-preview {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid #f0dee3;
+    flex-shrink: 0;
+}
+
+.help-text {
+    font-size: 0.75rem;
+    color: #c8adb6;
+    margin-top: 0.3rem;
+}
+
+/* Ошибки */
+.errorlist {
+    list-style: none;
+    color: #e0868a;
+    font-size: 0.8rem;
+    margin-top: 0.3rem;
+    margin-left: 0.5rem;
+}
+
+/* Кнопки */
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #f2e4e8;
+}
+
+.btn-primary {
+    background: #d9a5b3;
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 0.9rem 2rem;
+    border-radius: 40px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex: 1;
+}
+
+.btn-primary:hover {
+    background: #c48b9b;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(217, 165, 179, 0.3);
+}
+
+.btn-secondary {
+    background: #f0dee3;
+    color: #8e6b78;
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 0.9rem 2rem;
+    border-radius: 40px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.btn-secondary:hover {
+    background: #e8cdd5;
+}
+
+@media (max-width: 600px) {
+    .habit-card {
+        padding: 1.5rem;
+    }
+
+    .form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .habit-wrapper {
+        padding: 1rem;
+    }
+
+    .color-grid {
+        grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .habit-header h2 {
+        font-size: 1.5rem;
+    }
+}
+</style>
+
+<script>
+// Переключение настроек периодичности
+document.querySelectorAll('input[name="frequency_type"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        // Скрываем все настройки
+        document.querySelectorAll('.frequency-settings').forEach(el => {
+            el.style.display = 'none';
+        });
+
+        // Показываем нужные
+        const type = this.value;
+        const settings = document.querySelector(`.${type}-settings`);
+        if (settings) {
+            settings.style.display = 'block';
+        }
+    });
+});
+
+// Выбор цвета
+document.querySelectorAll('.color-option input[type="radio"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        document.querySelectorAll('.color-option').forEach(opt => {
+            opt.classList.remove('selected');
+        });
+        this.closest('.color-option').classList.add('selected');
+    });
+});
+</script>
+{% endblock %}
