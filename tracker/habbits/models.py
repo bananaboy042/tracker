@@ -3,6 +3,8 @@ from django.utils.safestring import mark_safe
 from django.utils.timezone import now
 from django.core.exceptions import ValidationError
 
+from users.models import User
+
 
 class Color(Model):
     name = CharField(max_length=50, verbose_name="Название цвета")
@@ -32,6 +34,7 @@ class Habbit(Model):
         - Ежемесячно: {"type": "monthly", "day": 15}  # 15-е число
         """
     )
+    user = ForeignKey(User, on_delete=PROTECT, verbose_name="Пользователь")
 
     def validate_dates(self):
         """Метод валидации дат"""
