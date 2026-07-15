@@ -24,24 +24,6 @@ def habbit_add(request):
         end_date = request.POST.get('end_date')
         frequency = request.POST.get('frequency_type')
 
-        daily_interval = 1
-        week_days = []
-        monthly_day = 1
-
-        daily = {'type': frequency}
-        if frequency == 'daily':
-            daily_interval = request.POST.get('daily_interval', 1)
-            daily['interval'] = int(daily_interval)
-        elif frequency == 'weekly':
-            week_days = request.POST.getlist('week_days', [1])
-            daily['days'] = [int(item) for item in week_days]
-        else:
-            monthly_day = request.POST.get('monthly_day', 1)
-            daily['day'] = int(monthly_day)
-
-        context = {'colors': colors}
-
-
         context = {
             'colors': colors,
             'name': habbit_name,
@@ -50,13 +32,22 @@ def habbit_add(request):
             'start_date': start_date,
             'end_date': end_date,
             'frequency_type': frequency,
-            'daily_interval': int(daily_interval) if daily_interval else 1,
-            'week_days': [int(item) for item in week_days] if week_days else [],
-            'monthly_day': int(monthly_day) if monthly_day else 1,
-            'error_message': None
         }
 
 
+        daily = {'type': frequency}
+        if frequency == 'daily':
+            daily_interval = request.POST.get('daily_interval', 1)
+            daily['interval'] = int(daily_interval)
+            context['daily_interval'] = daily_interval
+        elif frequency == 'weekly':
+            week_days = request.POST.getlist('week_days', [1])
+            daily['days'] = [int(item) for item in week_days]
+            context['week_days'] = week_days
+        else:
+            monthly_day = request.POST.get('monthly_day', 1)
+            daily['day'] = int(monthly_day)
+            context['monthly_day'] = monthly_day
 
         try:
             start_date = datetime.strptime(start_date, '%Y-%m-%d').date() if start_date else None
