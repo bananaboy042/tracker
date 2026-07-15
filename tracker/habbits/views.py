@@ -24,6 +24,10 @@ def habbit_add(request):
         end_date = request.POST.get('end_date')
         frequency = request.POST.get('frequency_type')
 
+        daily_interval = 1
+        week_days = []
+        monthly_day = 1
+
         daily = {'type': frequency}
         if frequency == 'daily':
             daily_interval = request.POST.get('daily_interval', 1)
@@ -34,9 +38,25 @@ def habbit_add(request):
         else:
             monthly_day = request.POST.get('monthly_day', 1)
             daily['day'] = int(monthly_day)
-        print(habbit_name, description, color_id, start_date, end_date, frequency,request.user )
 
         context = {'colors': colors}
+
+
+        context = {
+            'colors': colors,
+            'name': habbit_name,
+            'description': description,
+            'selected_color': int(color_id) if color_id else None,
+            'start_date': start_date,
+            'end_date': end_date,
+            'frequency_type': frequency,
+            'daily_interval': int(daily_interval) if daily_interval else 1,
+            'week_days': [int(item) for item in week_days] if week_days else [],
+            'monthly_day': int(monthly_day) if monthly_day else 1,
+            'error_message': None
+        }
+
+
 
         try:
             start_date = datetime.strptime(start_date, '%Y-%m-%d').date() if start_date else None

@@ -12,6 +12,7 @@
                 <h2>Новая привычка</h2>
                 <p class="subtitle">Создай привычку, которая изменит твою жизнь</p>
             </div>
+
             {% if error_message %}
             <div class="error-message-box">
                 <span class="error-icon">⚠️</span>
@@ -54,39 +55,41 @@
                     {% endif %}
                 </div>
 
-                <!-- Цвет -->
+                <!-- Цвет - палитра -->
                 <div class="form-group">
-    <label>Цвет привычки <span class="required">*</span></label>
+                    <label>Выбери цвет привычки <span class="required">*</span></label>
 
-    <!-- Для отладки: покажи список цветов -->
-    {% if colors %}
-    <div class="color-grid">
-        {% for color in colors %}
-        <label class="color-option {% if selected_color == color.id %}selected{% endif %}">
-            <input type="radio"
-                   name="color"
-                   value="{{ color.id }}"
-                   {% if selected_color == color.id %}checked{% endif %}
-                   required>
-            <span class="color-preview"
-                  style="background-color: {% if color.hex_code %}{{ color.hex_code }}{% else %}#cccccc{% endif %};">
-            </span>
-            <span class="color-name">{{ color.name }}</span>
-        </label>
-        {% endfor %}
-    </div>
-    {% else %}
-    <div class="no-colors">
-        <p style="color: #e0868a;">⚠️ Цвета не найдены. Добавьте цвета в базу данных.</p>
-    </div>
-    {% endif %}
+                    <div class="color-picker-group">
+                        <div class="color-picker-wrapper" id="colorPickerWrapper">
+                            <input type="color"
+                                   id="habit_color"
+                                   name="habit_color"
+                                   value="{{ habit_color|default:'#d9a5b3' }}"
+                                   class="color-picker-input">
+                        </div>
+                        <div class="color-info">
+                            <div class="color-hex-wrapper">
+                                <span class="color-hex-label">#</span>
+                                <input type="text"
+                                       id="color_hex_input"
+                                       name="color_hex_input"
+                                       value="{{ habit_color|default:'#d9a5b3'|cut:'#' }}"
+                                       class="color-hex-input"
+                                       placeholder="d9a5b3"
+                                       maxlength="6"
+                                       autocomplete="off">
+                            </div>
+                        </div>
+                    </div>
 
-    {% if errors.color %}
-        <ul class="errorlist">
-            <li>{{ errors.color }}</li>
-        </ul>
-    {% endif %}
-</div>
+                    <div class="color-hint">Нажми на круг или введи HEX-код</div>
+
+                    {% if errors.color %}
+                        <ul class="errorlist">
+                            <li>{{ errors.color }}</li>
+                        </ul>
+                    {% endif %}
+                </div>
 
                 <!-- Дата начала -->
                 <div class="form-row">
@@ -214,7 +217,7 @@
                     <button type="submit" class="btn-primary">
                         ✨ Создать привычку
                     </button>
-                    <a href="" class="btn-secondary">
+                    <a href="{% url 'habbitadd' %}" class="btn-secondary">
                         Отмена
                     </a>
                 </div>
@@ -282,7 +285,6 @@
     color: #5a3d4a;
     font-weight: 500;
     font-size: 0.9rem;
-
 }
 
 .habit-form input[type="text"],
@@ -317,55 +319,112 @@
     color: #e0868a;
 }
 
-/* Цвета */
-.color-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-    gap: 0.7rem;
+/* Выбор цвета */
+.color-picker-group {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.2rem 1.5rem;
+    background: #fef5f7;
+    border-radius: 24px;
+    border: 1.5px solid #f0dee3;
 }
 
-.color-option {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.3rem;
-    padding: 0.5rem;
-    border: 2px solid #f0dee3;
-    border-radius: 16px;
+.color-picker-wrapper {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    overflow: hidden;
+    border-radius: 50%;
+    border: 3px solid #f0dee3;
+    flex-shrink: 0;
     cursor: pointer;
     transition: all 0.3s;
-    background: white;
 }
 
-.color-option:hover {
+.color-picker-wrapper:hover {
+    transform: scale(1.05);
     border-color: #d9a5b3;
 }
 
-.color-option.selected {
-    border-color: #d9a5b3;
-    background: #fef5f7;
+.color-picker-input {
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    width: calc(100% + 20px);
+    height: calc(100% + 20px);
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 0;
+    background: none;
 }
 
-.color-option input[type="radio"] {
-    display: none;
+.color-picker-input::-webkit-color-swatch-wrapper {
+    padding: 0;
 }
 
-.color-preview {
-    width: 40px;
-    height: 40px;
+.color-picker-input::-webkit-color-swatch {
+    border: none;
     border-radius: 50%;
-    border: 2px solid #f0dee3;
+}
+
+.color-info {
+    display: flex;
+    align-items: center;
+    flex: 1;
+}
+
+.color-hex-wrapper {
+    display: flex;
+    align-items: center;
+    background: white;
+    border-radius: 20px;
+    border: 1.5px solid #f0dee3;
+    padding: 0.2rem 0.8rem 0.2rem 0.5rem;
     transition: all 0.3s;
+    width: 100%;
+    max-width: 180px;
 }
 
-.color-option.selected .color-preview {
+.color-hex-wrapper:focus-within {
     border-color: #d9a5b3;
-    transform: scale(1.1);
+    box-shadow: 0 0 0 3px rgba(217, 165, 179, 0.1);
 }
 
-.color-name {
-    font-size: 0.7rem;
+.color-hex-label {
+    font-size: 1rem;
+    font-weight: 700;
     color: #b0949e;
+    font-family: monospace;
+    padding-right: 0.2rem;
+}
+
+.color-hex-input {
+    border: none;
+    outline: none;
+    padding: 0.4rem 0.2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #5a3d4a;
+    font-family: monospace;
+    background: transparent;
+    width: 100%;
+    text-transform: lowercase;
+    letter-spacing: 1px;
+}
+
+.color-hex-input::placeholder {
+    color: #d0b8c0;
+    font-weight: 400;
+}
+
+.color-hint {
+    font-size: 0.75rem;
+    color: #c8adb6;
+    margin-top: 0.5rem;
+    text-align: left;
+    padding-left: 0.3rem;
 }
 
 /* Ряды */
@@ -442,15 +501,6 @@
     margin-left: 0.5rem;
 }
 
-.color-preview {
-    display: inline-block;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    border: 2px solid #f0dee3;
-    flex-shrink: 0;
-}
-
 .help-text {
     font-size: 0.75rem;
     color: #c8adb6;
@@ -513,33 +563,6 @@
     background: #e8cdd5;
 }
 
-@media (max-width: 600px) {
-    .habit-card {
-        padding: 1.5rem;
-    }
-
-    .form-row {
-        flex-direction: column;
-        gap: 0;
-    }
-
-    .habit-wrapper {
-        padding: 1rem;
-    }
-
-    .color-grid {
-        grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-    }
-
-    .form-actions {
-        flex-direction: column;
-    }
-
-    .habit-header h2 {
-        font-size: 1.5rem;
-    }
-}
-/* Блок для общей ошибки */
 .error-message-box {
     display: flex;
     align-items: center;
@@ -587,18 +610,114 @@
     60% { transform: translateX(-5px); }
     80% { transform: translateX(5px); }
 }
+
+@media (max-width: 600px) {
+    .habit-card {
+        padding: 1.5rem;
+    }
+
+    .form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .habit-wrapper {
+        padding: 1rem;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .habit-header h2 {
+        font-size: 1.5rem;
+    }
+
+    .color-picker-group {
+        flex-wrap: wrap;
+        justify-content: center;
+        padding: 1rem;
+    }
+
+    .color-picker-wrapper {
+        width: 50px;
+        height: 50px;
+    }
+
+    .color-hex-wrapper {
+        max-width: 150px;
+    }
+}
 </style>
 
 <script>
+// Синхронизация между пикером и HEX-полем
+const colorPicker = document.getElementById('habit_color');
+const colorHexInput = document.getElementById('color_hex_input');
+const colorPickerWrapper = document.getElementById('colorPickerWrapper');
+
+// Функция обновления цвета
+function updateColor(color) {
+    colorPicker.value = color;
+    colorHexInput.value = color.replace('#', '');
+    colorPickerWrapper.style.backgroundColor = color;
+}
+
+// При выборе цвета через пикер
+colorPicker.addEventListener('input', function() {
+    updateColor(this.value);
+});
+
+// При вводе HEX-кода вручную
+colorHexInput.addEventListener('input', function() {
+    let hex = this.value.trim().toLowerCase();
+    hex = hex.replace(/[^0-9a-f]/g, '');
+    this.value = hex;
+
+    if (hex.length === 6) {
+        const color = '#' + hex;
+        if (/^#[0-9a-f]{6}$/i.test(color)) {
+            updateColor(color);
+        }
+    }
+});
+
+// При потере фокуса
+colorHexInput.addEventListener('blur', function() {
+    let hex = this.value.trim().toLowerCase();
+    if (hex.length > 0 && hex.length < 6) {
+        while (hex.length < 6) {
+            hex += '0';
+        }
+        this.value = hex;
+        const color = '#' + hex;
+        if (/^#[0-9a-f]{6}$/i.test(color)) {
+            updateColor(color);
+        }
+    } else if (!hex) {
+        this.value = colorPicker.value.replace('#', '');
+    }
+});
+
+// При фокусе - выделяем текст
+colorHexInput.addEventListener('focus', function() {
+    this.select();
+});
+
+// Инициализация цвета при загрузке
+document.addEventListener('DOMContentLoaded', function() {
+    const initialColor = colorPicker.value || '#d9a5b3';
+    colorPickerWrapper.style.backgroundColor = initialColor;
+    colorHexInput.value = initialColor.replace('#', '');
+});
+
 // Переключение настроек периодичности
 document.querySelectorAll('input[name="frequency_type"]').forEach(radio => {
     radio.addEventListener('change', function() {
-        // Скрываем все настройки
         document.querySelectorAll('.frequency-settings').forEach(el => {
             el.style.display = 'none';
         });
 
-        // Показываем нужные
         const type = this.value;
         const settings = document.querySelector(`.${type}-settings`);
         if (settings) {
@@ -607,15 +726,6 @@ document.querySelectorAll('input[name="frequency_type"]').forEach(radio => {
     });
 });
 
-// Выбор цвета
-document.querySelectorAll('.color-option input[type="radio"]').forEach(radio => {
-    radio.addEventListener('change', function() {
-        document.querySelectorAll('.color-option').forEach(opt => {
-            opt.classList.remove('selected');
-        });
-        this.closest('.color-option').classList.add('selected');
-    });
-});
 // Автоматическое закрытие ошибки через 5 секунд
 document.addEventListener('DOMContentLoaded', function() {
     const errorBox = document.querySelector('.error-message-box');
