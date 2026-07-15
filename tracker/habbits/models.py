@@ -1,27 +1,12 @@
 from django.db.models import Model, CharField, TextField, ForeignKey, PROTECT, DateField, JSONField
-from django.utils.safestring import mark_safe
 from django.utils.timezone import now
 from django.core.exceptions import ValidationError
-
 from users.models import User
-
-
-class Color(Model):
-    name = CharField(max_length=50, verbose_name="Название цвета")
-    hex_code = CharField(max_length=7, unique=True, verbose_name="HEX код цвета")
-
-    def color_preview(self):
-        return mark_safe(
-            f'<div style="background-color: {self.hex_code}; width: 30px; height: 30px; border: 1px solid #ddd;"></div>'
-        )
-
-    color_preview.short_description = 'Цвет'
-
 
 class Habbit(Model):
     name = CharField(max_length=100, verbose_name="Название привычки")
     description = TextField(max_length=500, blank=True, verbose_name="Описание привычки")
-    color = ForeignKey(Color, on_delete=PROTECT, verbose_name="Цвет привычки")
+    color = CharField(max_length=7, verbose_name="Цвет привычки")
     start_date = DateField(default=now, verbose_name="Дата начала")
     end_date = DateField(null=True, blank=True, verbose_name="Дата окончания")
     frequency = JSONField(

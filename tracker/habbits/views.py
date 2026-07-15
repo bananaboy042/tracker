@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 from django.shortcuts import render
 
-from .models import Color, Habbit
+from .models import Habbit
 
 
 @login_required
@@ -13,22 +13,21 @@ def tracker(request):
 @login_required
 def habbit_add(request):
     if request.method == "GET":
-        colors = Color.objects.all()
-        return render(request,'habbitadd.html', context={'colors':colors})
+
+        return render(request,'habbitadd.html',)
     else:
-        colors = Color.objects.all()
+
         habbit_name = request.POST.get('name')
         description = request.POST.get('description')
-        color_id = request.POST.get('color')
+        color = request.POST.get('color_hex_input', 'd9a5b3')
         start_date = request.POST.get('start_date')
         end_date = request.POST.get('end_date')
         frequency = request.POST.get('frequency_type')
 
         context = {
-            'colors': colors,
             'name': habbit_name,
             'description': description,
-            'selected_color': int(color_id) if color_id else None,
+            'color': color,
             'start_date': start_date,
             'end_date': end_date,
             'frequency_type': frequency,
@@ -57,7 +56,7 @@ def habbit_add(request):
             return render(request, 'habbitadd.html', context=context)
 
         try:
-            Habbit.objects.create(name=habbit_name, description=description, color_id=color_id,
+            Habbit.objects.create(name=habbit_name, description=description, color=f'#{color}',
                                   start_date=start_date, end_date=end_date, frequency=daily, user=request.user)
             return render(request, 'habbitadd.html', context=context)
         except ValidationError as e:
