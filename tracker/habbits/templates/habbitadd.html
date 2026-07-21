@@ -64,7 +64,7 @@
                             <input type="color"
                                    id="habit_color"
                                    name="habit_color"
-                                   value="{{ habit_color|default:'#d9a5b3' }}"
+                                   value="{{ color|default:'#d9a5b3' }}"
                                    class="color-picker-input">
                         </div>
                         <div class="color-info">
@@ -73,7 +73,7 @@
                                 <input type="text"
                                        id="color_hex_input"
                                        name="color_hex_input"
-                                       value="{{ habit_color|default:'#d9a5b3'|cut:'#' }}"
+                                       value="{{ color|default:'#d9a5b3'|cut:'#' }}"
                                        class="color-hex-input"
                                        placeholder="d9a5b3"
                                        maxlength="6"

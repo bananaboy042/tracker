@@ -1,14 +1,15 @@
 from datetime import datetime
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 from .models import Habbit
 
 
 @login_required
 def tracker(request):
-    return render(request, 'tracker.html')
+
+    return render(request, 'tracker.html', context={'habits': Habbit.objects.filter(user=request.user)})
 
 @login_required
 def habbit_add(request):
@@ -19,10 +20,11 @@ def habbit_add(request):
 
         habbit_name = request.POST.get('name')
         description = request.POST.get('description')
-        color = request.POST.get('color_hex_input', 'd9a5b3')
+        color = '#' + request.POST.get('color_hex_input', 'd9a5b3')
         start_date = request.POST.get('start_date')
         end_date = request.POST.get('end_date')
         frequency = request.POST.get('frequency_type')
+
 
         context = {
             'name': habbit_name,
@@ -56,9 +58,9 @@ def habbit_add(request):
             return render(request, 'habbitadd.html', context=context)
 
         try:
-            Habbit.objects.create(name=habbit_name, description=description, color=f'#{color}',
+            Habbit.objects.create(name=habbit_name, description=description, color=color,
                                   start_date=start_date, end_date=end_date, frequency=daily, user=request.user)
-            return render(request, 'habbitadd.html', context=context)
+            return redirect('tracker')
         except ValidationError as e:
             context['error_message'] = e.messages[0]
             return render(request, 'habbitadd.html', context=context)
