@@ -47,8 +47,8 @@
 
                             <form method="post" action="" class="habit-done-form">
                                 {% csrf_token %}
-                                <button type="submit" class="btn-done" {% if habit.is_done_today %}disabled{% endif %}>
-                                    {% if habit.is_done_today %}
+                                <button type="submit" class="btn-done" {% if habit.is_done_today or habit.is_today_execution  %}disabled{% endif %}>
+                                    {% if habit.is_done_today or habit.is_today_execution %}
                                         ✅ Выполнено
                                     {% else %}
                                         ✔️ Выполнить

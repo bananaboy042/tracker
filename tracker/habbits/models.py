@@ -2,6 +2,10 @@ from django.db.models import Model, CharField, TextField, ForeignKey, PROTECT, D
 from django.utils.timezone import now
 from django.core.exceptions import ValidationError
 from users.models import User
+from dateutil.relativedelta import relativedelta
+from datetime import timedelta
+import calendar
+
 
 class Habbit(Model):
     name = CharField(max_length=100, verbose_name="Название привычки")
@@ -9,6 +13,7 @@ class Habbit(Model):
     color = CharField(max_length=7, verbose_name="Цвет привычки")
     start_date = DateField(default=now, verbose_name="Дата начала")
     end_date = DateField(null=True, blank=True, verbose_name="Дата окончания")
+    last_executed = DateField(null=True, blank=True, verbose_name="Дата последнего выполнения")
     frequency = JSONField(
         verbose_name="Настройки периодичности",
         help_text="""
@@ -20,6 +25,89 @@ class Habbit(Model):
         """
     )
     user = ForeignKey(User, on_delete=PROTECT, verbose_name="Пользователь")
+
+    @property
+    def is_done_today(self):
+        return self.last_executed == now().date()
+
+    @property
+    def is_today_execution(self):
+        """Проверяет, является ли сегодня днем выполнения"""
+        today = now().date()
+        return self.next_execution_date != today
+
+    @property
+    def next_execution_date(self):
+        today = now().date()
+        freq_type = self.frequency.get('type')
+
+        if freq_type == 'daily':
+            interval = self.frequency.get('interval', 1)
+
+            if self.start_date > today:
+                return self.start_date
+
+            days_since_start = (today - self.start_date).days
+            if days_since_start % interval == 0:
+                return today
+
+            return today + timedelta(days=interval - (days_since_start % interval))
+
+        elif freq_type == 'weekly':
+            week_days = sorted(self.frequency.get('days', []))
+            if not week_days:
+                return today
+
+            current_weekday = today.isoweekday()
+
+            for day in week_days:
+                if day > current_weekday:
+                    return today + timedelta(days=day - current_weekday)
+
+            return today + timedelta(days=(7 - current_weekday) + week_days[0])
+
+        elif freq_type == 'monthly':
+            target_day = self.frequency.get('day', 1)
+
+            # Создаем дату для текущего месяца
+            try:
+                # Пытаемся создать дату с указанным днем
+                next_date = today.replace(day=target_day)
+            except ValueError:
+                # Если день не существует (например, 31 февраля)
+                # Берем последний день месяца
+                last_day = calendar.monthrange(today.year, today.month)[1]
+                next_date = today.replace(day=last_day)
+
+            # Если дата уже прошла или сегодня
+            if next_date <= today:
+                # Переходим на следующий месяц
+                next_date = today + relativedelta(months=1)
+                try:
+                    next_date = next_date.replace(day=target_day)
+                except ValueError:
+                    last_day = calendar.monthrange(next_date.year, next_date.month)[1]
+                    next_date = next_date.replace(day=last_day)
+
+            # Проверяем, что дата не раньше start_date
+            if next_date < self.start_date:
+                # Если дата выполнения раньше start_date, корректируем
+                diff_months = (self.start_date.year - next_date.year) * 12 + (self.start_date.month - next_date.month)
+                if diff_months > 0:
+                    next_date = self.start_date
+                    # Ищем следующую дату после start_date
+                    while next_date <= self.start_date:
+                        next_date += relativedelta(months=1)
+                        try:
+                            next_date = next_date.replace(day=target_day)
+                        except ValueError:
+                            last_day = calendar.monthrange(next_date.year, next_date.month)[1]
+                            next_date = next_date.replace(day=last_day)
+
+            return next_date
+
+        else:
+            return max(today, self.start_date)
 
     def validate_dates(self):
         """Метод валидации дат"""
