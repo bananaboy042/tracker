@@ -45,7 +45,7 @@
                                 <span class="streak-label">дней</span>
                             </div>
 
-                            <form method="post" action="" class="habit-done-form">
+                            <form method="post" action="{% url 'habbit_execut' habit.id %}" class="habit-done-form">
                                 {% csrf_token %}
                                 <button type="submit" class="btn-done" {% if habit.is_done_today or habit.is_today_execution  %}disabled{% endif %}>
                                     {% if habit.is_done_today or habit.is_today_execution %}

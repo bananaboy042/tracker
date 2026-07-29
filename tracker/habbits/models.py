@@ -26,6 +26,9 @@ class Habbit(Model):
     )
     user = ForeignKey(User, on_delete=PROTECT, verbose_name="Пользователь")
 
+    def __str__(self):
+        return f'Привычка {self.name} создана {self.start_date}'
+
     @property
     def is_done_today(self):
         return self.last_executed == now().date()

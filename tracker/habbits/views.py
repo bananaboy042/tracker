@@ -2,7 +2,7 @@ from datetime import datetime
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 from django.shortcuts import render, redirect
-
+from django.utils.timezone import now
 from .models import Habbit
 
 
@@ -64,3 +64,11 @@ def habbit_add(request):
         except ValidationError as e:
             context['error_message'] = e.messages[0]
             return render(request, 'habbitadd.html', context=context)
+
+def habbit_execute(request, habbit_id):
+    if request.method == 'POST':
+        habbit = Habbit.objects.get(pk=habbit_id)
+        last_executed = now().date()
+        habbit.last_executed = last_executed
+        habbit.save()
+        return redirect('tracker')
