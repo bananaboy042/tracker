@@ -167,8 +167,8 @@ class Habbit(Model):
 
     def save(self, *args, **kwargs):
         """Переопределяем save для валидации"""
-        # Валидация перед сохранением
-        self.validate_dates()
+        if self.pk is None:
+            self.validate_dates()
         self.validate_frequency()
         super().save(*args, **kwargs)
 

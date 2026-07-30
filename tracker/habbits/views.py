@@ -72,3 +72,21 @@ def habbit_execute(request, habbit_id):
         habbit.last_executed = last_executed
         habbit.save()
         return redirect('tracker')
+
+def edit_habit(request, habbit_id):
+    habit = Habbit.objects.get(pk=habbit_id)
+    if request.method == 'GET':
+        return render(request, 'habit_edit.html', context={'habit': habit})
+    else:
+        habit_name = request.POST.get('name')
+        description = request.POST.get('description')
+        habit.name = habit_name
+        habit.description = description
+        habit.save()
+        return render(request, 'habit_edit.html', context={'habit': habit})
+
+
+def delete_habit(request, habbit_id):
+    if request.method == 'POST':
+        Habbit.objects.get(pk=habbit_id).delete()
+        return redirect('tracker')

@@ -31,7 +31,7 @@
 
                     <div class="habit-content-wrapper">
                         <div class="habit-content">
-                            <div class="habit-name">{{ habit.name }}</div>
+                            <div class="habit-name"><a href="{% url 'habit_edit' habit.id %}">{{ habit.name }}</a></div>
                             <div class="habit-description">{{ habit.description|default:"Без описания"|truncatechars:40 }}</div>
                             <div class="habit-next-date">
                                 📅 Следующее выполнение: <span>{{ habit.next_execution_date|date:"d.m.Y"|default:"—" }}</span>

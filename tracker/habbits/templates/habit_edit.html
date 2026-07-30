@@ -1,0 +1,453 @@
+<!-- habit_detail.html -->
+{% extends 'base.html' %}
+
+{% block title %}{{ habit.name }} — Habit tracker{% endblock %}
+
+{% block content %}
+<div class="detail-wrapper">
+    <div class="detail-container">
+        <div class="detail-card">
+            <!-- Шапка с цветом -->
+            <div class="detail-header" style="--habit-color: {{ habit.color.hex_code|default:'#d9a5b3' }};">
+                <div class="detail-header-bg"></div>
+                <div class="detail-header-content">
+                    <a href="{% url 'tracker' %}" class="back-link">← Назад к привычкам</a>
+                    <div class="detail-emoji">{{ habit.icon|default:"🌟" }}</div>
+                    <h1>{{ habit.name }}</h1>
+                    <div class="habit-status">
+                        {% if habit.is_overdue %}
+                            <span class="status-badge overdue">🔴 Просрочена</span>
+                        {% elif habit.is_due_today %}
+                            <span class="status-badge due-today">🔔 Нужно выполнить сегодня</span>
+                        {% elif habit.is_done_today %}
+                            <span class="status-badge done">✅ Выполнена сегодня</span>
+                        {% else %}
+                            <span class="status-badge waiting">⏳ Ожидает выполнения</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Форма редактирования -->
+            <form method="post" class="detail-form">
+                {% csrf_token %}
+
+                <div class="detail-body">
+                    <div class="form-group">
+                        <label for="name">Название привычки <span class="required">*</span></label>
+                        <input type="text"
+                               id="name"
+                               name="name"
+                               value="{{ habit.name }}"
+                               placeholder="Введите название"
+                               required>
+                        {% if errors.name %}
+                            <ul class="errorlist">
+                                <li>{{ errors.name }}</li>
+                            </ul>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">Описание</label>
+                        <textarea id="description"
+                                  name="description"
+                                  rows="4"
+                                  placeholder="Расскажи подробнее о привычке...">{{ habit.description|default:'' }}</textarea>
+                        {% if errors.description %}
+                            <ul class="errorlist">
+                                <li>{{ errors.description }}</li>
+                            </ul>
+                        {% endif %}
+                    </div>
+
+                    <!-- Информация о привычке (только для чтения) -->
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">🎨 Цвет</span>
+                            <div class="info-color" style="background-color: {{ habit.color.hex_code|default:'#d9a5b3' }};"></div>
+                            <span class="info-value">{{ habit.color.hex_code|default:'#d9a5b3' }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">📅 Дата начала</span>
+                            <span class="info-value">{{ habit.start_date|date:"d.m.Y" }}</span>
+                        </div>
+                        {% if habit.end_date %}
+                        <div class="info-item">
+                            <span class="info-label">📅 Дата окончания</span>
+                            <span class="info-value">{{ habit.end_date|date:"d.m.Y" }}</span>
+                        </div>
+                        {% endif %}
+                        <div class="info-item">
+                            <span class="info-label">🔄 Периодичность</span>
+                            <span class="info-value">
+                                {% if habit.frequency.type == 'daily' %}
+                                    Каждые {{ habit.frequency.interval }} дн.
+                                {% elif habit.frequency.type == 'weekly' %}
+                                    {% for day in habit.frequency.days %}
+                                        {% if day == 1 %}Пн{% elif day == 2 %}Вт{% elif day == 3 %}Ср{% elif day == 4 %}Чт{% elif day == 5 %}Пт{% elif day == 6 %}Сб{% elif day == 7 %}Вс{% endif %}
+                                        {% if not forloop.last %}, {% endif %}
+                                    {% endfor %}
+                                {% elif habit.frequency.type == 'monthly' %}
+                                    {{ habit.frequency.day }}-е число
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">🔥 Текущая серия</span>
+                            <span class="info-value streak">{{ habit.current_streak|default:"0" }} дней</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">📅 Следующее выполнение</span>
+                            <span class="info-value">{{ habit.next_execution_date|date:"d.m.Y"|default:"—" }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Кнопки -->
+                <div class="detail-actions">
+                    <button type="submit" class="btn-save">
+                        💾 Сохранить изменения
+                    </button>
+                    <button type="button" class="btn-delete" onclick="confirmDelete()">
+                        🗑️ Удалить привычку
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Форма для удаления -->
+<form method="post" action="{% url 'habit_del' habit.id %}" id="deleteForm" style="display: none;">
+    {% csrf_token %}
+</form>
+
+<style>
+.detail-wrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 2rem 1.5rem;
+    position: relative;
+    z-index: 1;
+}
+
+.detail-container {
+    max-width: 700px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.detail-card {
+    background: white;
+    border-radius: 40px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.06);
+    border: 1px solid #f2e4e8;
+    overflow: hidden;
+}
+
+/* Шапка с цветом */
+.detail-header {
+    position: relative;
+    padding: 2rem 2.5rem;
+    overflow: hidden;
+    min-height: 180px;
+    display: flex;
+    align-items: center;
+}
+
+.detail-header-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--habit-color, #d9a5b3);
+    opacity: 0.15;
+    z-index: 0;
+}
+
+.detail-header-bg::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 60%;
+    height: 200%;
+    border-radius: 50%;
+    background: var(--habit-color, #d9a5b3);
+    opacity: 0.2;
+}
+
+.detail-header-bg::after {
+    content: '';
+    position: absolute;
+    bottom: -40%;
+    left: -5%;
+    width: 50%;
+    height: 180%;
+    border-radius: 50%;
+    background: var(--habit-color, #d9a5b3);
+    opacity: 0.15;
+}
+
+.detail-header-content {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+}
+
+.back-link {
+    display: inline-block;
+    color: #5a3d4a;
+    text-decoration: none;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    transition: all 0.2s;
+    font-weight: 500;
+}
+
+.back-link:hover {
+    color: var(--habit-color, #d9a5b3);
+    transform: translateX(-3px);
+}
+
+.detail-emoji {
+    font-size: 3rem;
+    margin-bottom: 0.3rem;
+}
+
+.detail-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #2a1a22;
+    margin: 0 0 0.5rem 0;
+}
+
+.habit-status {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 0.3rem 1rem;
+    border-radius: 40px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.status-badge.overdue {
+    background: rgba(255, 107, 107, 0.15);
+    color: #c0392b;
+}
+
+.status-badge.due-today {
+    background: rgba(255, 217, 61, 0.2);
+    color: #8a6d00;
+}
+
+.status-badge.done {
+    background: rgba(46, 204, 113, 0.15);
+    color: #27ae60;
+}
+
+.status-badge.waiting {
+    background: rgba(200, 200, 200, 0.2);
+    color: #7f8c8d;
+}
+
+/* Форма */
+.detail-form {
+    padding: 2rem 2.5rem 2.5rem;
+}
+
+.detail-body {
+    margin-bottom: 2rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #5a3d4a;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.form-group input[type="text"],
+.form-group textarea {
+    width: 100%;
+    padding: 0.9rem 1.2rem;
+    border: 1.5px solid #f0dee3;
+    border-radius: 20px;
+    font-size: 0.95rem;
+    background: white;
+    transition: all 0.3s;
+    outline: none;
+    color: #4a2f3a;
+    font-family: inherit;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: #d9a5b3;
+    box-shadow: 0 0 0 3px rgba(217, 165, 179, 0.1);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.required {
+    color: #e0868a;
+}
+
+.errorlist {
+    list-style: none;
+    color: #e0868a;
+    font-size: 0.8rem;
+    margin-top: 0.3rem;
+    margin-left: 0.5rem;
+}
+
+/* Информационная сетка */
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    background: #fef5f7;
+    border-radius: 20px;
+    border: 1px solid #f0dee3;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.info-label {
+    font-size: 0.7rem;
+    color: #b0949e;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.info-value {
+    font-size: 0.95rem;
+    color: #2a1a22;
+    font-weight: 500;
+}
+
+.info-value.streak {
+    color: #d9a5b3;
+    font-weight: 700;
+}
+
+.info-color {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 2px solid #f0dee3;
+}
+
+/* Кнопки */
+.detail-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #f2e4e8;
+}
+
+.btn-save {
+    flex: 1;
+    background: #d9a5b3;
+    color: white;
+    border: none;
+    padding: 0.9rem 2rem;
+    border-radius: 40px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-save:hover {
+    background: #c48b9b;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(217, 165, 179, 0.3);
+}
+
+.btn-delete {
+    background: transparent;
+    color: #e0868a;
+    border: 1.5px solid #e0868a;
+    padding: 0.9rem 1.5rem;
+    border-radius: 40px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    white-space: nowrap;
+}
+
+.btn-delete:hover {
+    background: #e0868a;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(224, 134, 138, 0.3);
+}
+
+/* Адаптив */
+@media (max-width: 650px) {
+    .detail-wrapper {
+        padding: 1rem;
+    }
+
+    .detail-header {
+        padding: 1.5rem;
+        min-height: 140px;
+    }
+
+    .detail-form {
+        padding: 1.5rem;
+    }
+
+    .detail-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+    }
+
+    .detail-actions {
+        flex-direction: column;
+    }
+
+    .btn-delete {
+        text-align: center;
+    }
+}
+</style>
+
+<script>
+function confirmDelete() {
+    if (confirm('Вы уверены, что хотите удалить привычку «{{ habit.name }}»? Это действие нельзя отменить.')) {
+        document.getElementById('deleteForm').submit();
+    }
+}ac
+</script>
+{% endblock %}
