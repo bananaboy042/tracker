@@ -1,4 +1,4 @@
-from django.db.models import Model, CharField, TextField, ForeignKey, PROTECT, DateField, JSONField
+from django.db.models import Model, CharField, TextField, ForeignKey, PROTECT, DateField, JSONField, IntegerField
 from django.utils.timezone import now
 from django.core.exceptions import ValidationError
 from users.models import User
@@ -25,6 +25,7 @@ class Habbit(Model):
         """
     )
     user = ForeignKey(User, on_delete=PROTECT, verbose_name="Пользователь")
+    count = IntegerField(default=0, verbose_name='кол-во выполнений подряд')
 
     def __str__(self):
         return f'Привычка {self.name} создана {self.start_date}'

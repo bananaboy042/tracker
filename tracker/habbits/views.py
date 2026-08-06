@@ -70,6 +70,7 @@ def habbit_execute(request, habbit_id):
         habbit = Habbit.objects.get(pk=habbit_id)
         last_executed = now().date()
         habbit.last_executed = last_executed
+        habbit.count = habbit.count + 1
         habbit.save()
         return redirect('tracker')
 
