@@ -1,6 +1,9 @@
 import threading
 import time
-from datetime import datetime
+from django.utils import timezone
+
+from habbits.models import Habbit
+
 
 class SchedulerThread(threading.Thread):
     def __init__(self, interval=10):
@@ -11,8 +14,14 @@ class SchedulerThread(threading.Thread):
 
     def run(self):
         while self.running:
-            current_time = datetime.now().strftime('%H:%M:%S')
-            print(f'Hello World! Время: {current_time}')
+            now = timezone.now()
+            time_str = now.strftime('%H:%M')
+            if time_str == '23:59':
+                habits = Habbit.objects.all()
+                for habit in habits:
+                    if habit.next_execution_date == now.strftime('%Y-%m-%d') and habit.is_done_today == False:
+                        habit.count = 0
+                        habit.save()
             time.sleep(self.interval)
 
 # Глобальный экземпляр планировщика
@@ -26,7 +35,7 @@ class SchedulerMiddleware:
     def _init_scheduler(self):
         global scheduler
         if scheduler is None:
-            scheduler = SchedulerThread(interval=10)
+            scheduler = SchedulerThread(interval=45)
             scheduler.start()
             print('🔄 Планировщик запущен через middleware!')
 
